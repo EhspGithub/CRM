@@ -47,6 +47,9 @@
                 </div>
                 
                 <div class="flex items-center space-x-1 space-x-reverse bg-slate-800 p-1 rounded-lg border border-slate-700">
+                    <button id="btn-lock-app" onclick="window.NRAuth && NRAuth.lock()" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:bg-slate-700 rounded transition duration-200" title="قفل کردن برنامه">
+                        <i class="fa-solid fa-lock"></i>
+                    </button>
                     <button id="btn-export-backup" onclick="exportDatabase()" class="w-8 h-8 flex items-center justify-center text-teal-400 hover:bg-slate-700 rounded transition duration-200" title="پشتیبان‌گیری دیتابیس (دانلود فایل)">
                         <i class="fa-solid fa-download"></i>
                     </button>
@@ -1562,6 +1565,10 @@
                         <i class="fa-solid fa-file-excel text-sm"></i>
                         <span>ورود و خروج اطلاعات</span>
                     </button>
+                    <button onclick="switchSettingsSubTab('security')" id="btn-settings-sub-security" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                        <span>امنیت و ورود</span>
+                    </button>
                     <button onclick="switchSettingsSubTab('about')" id="btn-settings-sub-about" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-info text-sm"></i>
                         <span>درباره سامانه</span>
@@ -1870,6 +1877,9 @@
                     </div>
                 </div>
 
+                <!-- Security / login Sub-Tab Container (rendered by src/auth/ui.js) -->
+                <div id="settings-sub-tab-security" class="hidden space-y-6"></div>
+
                 <!-- About System Sub-Tab Container -->
                 <div id="settings-sub-tab-about" class="hidden space-y-6">
                     <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-8">
@@ -2017,6 +2027,7 @@
                     </label>
                 </div>
                 <div id="mobile-backup-status" class="mt-2 text-[10px] font-bold text-center"></div>
+                <button type="button" onclick="closeMobileMenu(); window.NRAuth && NRAuth.lock()" class="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-800 text-white text-[11px] font-bold"><i class="fa-solid fa-lock"></i>قفل کردن برنامه</button>
             </div>
         </div>
     </div>

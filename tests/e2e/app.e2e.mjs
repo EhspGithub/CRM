@@ -34,10 +34,39 @@ async function waitForServer() {
   throw new Error("preview server did not start");
 }
 
+
+// ---------- login screen ----------
+const CREDS = { user: "admin", pass: "secret123" };
+let recoveryCode = null;
+const getRecoveryCode = () => recoveryCode;
+
+async function passGate(page) {
+  await page.waitForSelector("#nr-auth [data-screen]", { timeout: 30000 });
+  const screen = await page.$eval("#nr-auth [data-screen]", (e) => e.dataset.screen);
+  if (screen === "setup") {
+    await page.type("#auth-username", CREDS.user);
+    await page.type("#auth-password", CREDS.pass);
+    await page.type("#auth-confirm", CREDS.pass);
+    await page.click("#auth-submit");
+    await page.waitForSelector('#nr-auth [data-screen="recovery"]', { timeout: 30000 });
+    recoveryCode = await page.$eval("#auth-code-value", (e) => e.textContent.trim());
+    await page.click("#auth-ack");
+    await page.click("#auth-submit");
+  } else {
+    await page.type("#auth-username", CREDS.user);
+    await page.type("#auth-password", CREDS.pass);
+    await page.click("#auth-submit");
+  }
+  await page.waitForFunction(() => !document.getElementById("nr-auth"), { timeout: 30000 });
+  return screen;
+}
+
 async function boot(page) {
   await page.goto(URL, { waitUntil: "networkidle0" });
+  const screen = await passGate(page);
   await page.waitForFunction(() => !document.getElementById("nr-splash") && window.patients, { timeout: 30000 });
   await sleep(300);
+  return screen;
 }
 
 try {
@@ -49,9 +78,10 @@ try {
   page.on("console", (m) => m.type() === "error" && !/favicon/.test(m.text()) && errors.push(m.text()));
   page.on("dialog", (d) => d.accept());
 
-  // ---------- start-up ----------
+  // ---------- start-up: first run asks to create the login ----------
   await page.setViewport({ width: 1366, height: 860 });
-  await boot(page);
+  const firstScreen = await boot(page);
+  check(firstScreen === "setup" && /^[A-Z2-9]{4}(-[A-Z2-9]{4}){3}$/.test(recoveryCode || ""), `first run shows account setup and a recovery code (${recoveryCode})`);
   const start = await page.evaluate(() => ({
     patients: window.patients.length,
     store: !!window.NRStore,
@@ -169,6 +199,40 @@ try {
   await sleep(300);
   check(await page.evaluate(() => document.querySelector("#print-preview-content table") !== null), "report builder + print preview render");
   await page.evaluate(() => closePrintPreview());
+
+  // ---------- login, lock, wrong password, forgotten password ----------
+  check((await boot(page)) === "login", "later starts ask for username and password");
+  const lockNow = () => page.evaluate(() => { NRAuth.lock(); return true; });
+  await lockNow();
+  await page.waitForSelector('#nr-auth [data-screen="login"]');
+  check(await page.evaluate(() => document.querySelector("header").inert === true), "lock screen makes the app behind it unreachable");
+  await page.type("#auth-username", CREDS.user);
+  await page.type("#auth-password", "wrong-pass");
+  await page.click("#auth-submit");
+  await page.waitForSelector("#nr-auth .auth-error.show");
+  check(true, "wrong password shows an error and stays locked");
+  await page.click("#auth-forgot");
+  await page.waitForSelector('#nr-auth [data-screen="forgot"]');
+  await page.type("#auth-code", recoveryCode.toLowerCase());
+  await page.$eval("#auth-username", (e) => (e.value = ""));
+  await page.type("#auth-username", "مدیر");
+  await page.type("#auth-password", "newpass99");
+  await page.type("#auth-confirm", "newpass99");
+  await page.click("#auth-submit");
+  await page.waitForSelector('#nr-auth [data-screen="recovery"]', { timeout: 30000 });
+  const newCode = await page.$eval("#auth-code-value", (e) => e.textContent.trim());
+  check(newCode !== recoveryCode, "recovery code resets the password and issues a new code");
+  await page.click("#auth-ack");
+  await page.click("#auth-submit");
+  await page.waitForFunction(() => !document.getElementById("nr-auth"), { timeout: 30000 });
+  check(await page.evaluate(() => document.querySelector("header").inert === false), "unlocking gives the app back");
+  CREDS.user = "مدیر";
+  CREDS.pass = "newpass99";
+  await page.evaluate(() => { switchTab("settings"); switchSettingsSubTab("security"); });
+  await sleep(300);
+  check(await page.evaluate(() => !!document.querySelector("#settings-sub-tab-security #sec-autolock")), "settings show the security page");
+  await page.screenshot({ path: path.join(SHOTS, "desktop-settings-security.png") });
+  check((await boot(page)) === "login", "new credentials work after a restart");
 
   check(errors.length === 0, `no JavaScript errors${errors.length ? ": " + errors.join(" | ") : ""}`);
   await browser.close();

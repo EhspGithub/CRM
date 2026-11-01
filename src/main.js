@@ -7,11 +7,14 @@ import "vazirmatn/Vazirmatn-font-face.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@majidh1/jalalidatepicker/dist/jalalidatepicker.min.css";
 import "./styles/app.css";
+import "./styles/auth.css";
 import Chart from "chart.js/auto";
 import "@majidh1/jalalidatepicker/dist/jalalidatepicker.min.js";
 import { openStore } from "./db/index.js";
 import * as platform from "./platform/index.js";
 import { installNativeShims } from "./platform/shims.js";
+import { Auth } from "./auth/auth.js";
+import { runGate, lockApp, installAutoLock, renderSecuritySettings } from "./auth/ui.js";
 
 window.Chart = Chart;
 
@@ -69,16 +72,35 @@ async function boot() {
   document.documentElement.classList.toggle("nr-native", window.NR_NATIVE);
   if (window.NR_NATIVE) installNativeShims();
 
+  let session = null;
   try {
     window.NRStore = await openStore();
+
+    // login before any patient data is read into memory
+    const auth = new Auth(window.NRStore);
+    await auth.load();
+    const settingsRec = (await window.NRStore.getAll("settings"))[0];
+    const screenOpts = { clinicName: settingsRec && settingsRec.data && settingsRec.data.clinicName, version: __APP_VERSION__ };
+    session = await runGate(auth, screenOpts);
+
+    const lock = () => lockApp(auth, screenOpts);
+    window.NRAuth = {
+      lock,
+      renderSettings: (el) => renderSecuritySettings(el, auth, lock),
+      get username() { return auth.username; },
+    };
+
     const base = import.meta.env.BASE_URL || "/";
     for (const name of APP_SCRIPTS) await loadScript(`${base}app/${name}.js`);
     await window.__nrBoot();
+    installAutoLock(auth, lock);
   } catch (err) {
     showFatal(err);
+    if (session) await session.reveal();
     return;
   }
   document.getElementById("nr-splash")?.remove();
+  await session.reveal();
 }
 
 boot();

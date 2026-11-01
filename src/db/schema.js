@@ -79,6 +79,15 @@ export const MIGRATIONS = [
       cols.map((c) => `CREATE INDEX IF NOT EXISTS idx_${table}_${c} ON ${table}(${c})`),
     ),
   ],
+  // v2: login credentials. Kept OUT of the record stores on purpose: never part of a JSON backup, a restore,
+  // a merge or «پاکسازی کامل», so restoring someone else's backup can't change who can open this device.
+  [
+    `CREATE TABLE IF NOT EXISTS auth (
+  id TEXT PRIMARY KEY NOT NULL,
+  data TEXT NOT NULL CHECK (json_valid(data)),
+  updated_at INTEGER NOT NULL
+) WITHOUT ROWID`,
+  ],
 ];
 
 export const SCHEMA_VERSION = MIGRATIONS.length;

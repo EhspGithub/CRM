@@ -123,6 +123,23 @@ export class Store {
     return this.putAll(storeName, []);
   }
 
+  /** Login record (separate `auth` table — see schema.js). */
+  getAuth() {
+    return this.enqueue(async () => {
+      const rows = await this.driver.select("SELECT data FROM auth WHERE id = 'main'");
+      return rows.length ? JSON.parse(rows[0].data) : null;
+    });
+  }
+
+  saveAuth(record) {
+    return this.enqueue(() =>
+      this.driver.execute(
+        "INSERT INTO auth (id, data, updated_at) VALUES ('main', ?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at",
+        [JSON.stringify(record), Date.now()],
+      ),
+    );
+  }
+
   /** Row counts per table — shown in Settings so the user can see what is in the database. */
   counts() {
     return this.enqueue(async () => {

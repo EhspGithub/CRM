@@ -21,6 +21,33 @@ const check = (ok, msg) => {
 };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+
+// ---------- login screen ----------
+const CREDS = { user: "admin", pass: "secret123" };
+let recoveryCode = null;
+const getRecoveryCode = () => recoveryCode;
+
+async function passGate(page) {
+  await page.waitForSelector("#nr-auth [data-screen]", { timeout: 30000 });
+  const screen = await page.$eval("#nr-auth [data-screen]", (e) => e.dataset.screen);
+  if (screen === "setup") {
+    await page.type("#auth-username", CREDS.user);
+    await page.type("#auth-password", CREDS.pass);
+    await page.type("#auth-confirm", CREDS.pass);
+    await page.click("#auth-submit");
+    await page.waitForSelector('#nr-auth [data-screen="recovery"]', { timeout: 30000 });
+    recoveryCode = await page.$eval("#auth-code-value", (e) => e.textContent.trim());
+    await page.click("#auth-ack");
+    await page.click("#auth-submit");
+  } else {
+    await page.type("#auth-username", CREDS.user);
+    await page.type("#auth-password", CREDS.pass);
+    await page.click("#auth-submit");
+  }
+  await page.waitForFunction(() => !document.getElementById("nr-auth"), { timeout: 30000 });
+  return screen;
+}
+
 // ---------- the fake "Rust side" ----------
 const SQL = await initSqlJs();
 const driver = createSqlJsDriver(SQL);
@@ -83,6 +110,7 @@ try {
   await page.setViewport({ width: 1366, height: 860 });
   const boot = async () => {
     await page.goto(URL, { waitUntil: "networkidle0" });
+    await passGate(page);
     await page.waitForFunction(() => !document.getElementById("nr-splash") && window.patients, { timeout: 30000 });
     await sleep(300);
   };

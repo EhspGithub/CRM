@@ -350,7 +350,9 @@ window.__nrBoot = async () => {
         const staffTab = document.getElementById('settings-sub-tab-staff');
         const dataTab = document.getElementById('settings-sub-tab-data');
         const aboutTab = document.getElementById('settings-sub-tab-about');
+        const securityTab = document.getElementById('settings-sub-tab-security');
 
+        if (securityTab) securityTab.classList.add('hidden');
         if (clinicTab) clinicTab.classList.add('hidden');
         if (staffTab) staffTab.classList.add('hidden');
         if (dataTab) dataTab.classList.add('hidden');
@@ -363,8 +365,9 @@ window.__nrBoot = async () => {
         const staffBtn = document.getElementById('btn-settings-sub-staff');
         const dataBtn = document.getElementById('btn-settings-sub-data');
         const aboutBtn = document.getElementById('btn-settings-sub-about');
+        const securityBtn = document.getElementById('btn-settings-sub-security');
 
-        [clinicBtn, staffBtn, dataBtn, aboutBtn].forEach(btn => {
+        [clinicBtn, staffBtn, dataBtn, aboutBtn, securityBtn].forEach(btn => {
             if (btn) {
                 btn.className = "px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5";
             }
@@ -377,6 +380,9 @@ window.__nrBoot = async () => {
 
         if (subTabId === 'data') {
             renderBackupHistoryList();
+        }
+        if (subTabId === 'security' && window.NRAuth) {
+            window.NRAuth.renderSettings(document.getElementById('settings-sub-tab-security'));
         }
     }
 

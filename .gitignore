@@ -13,3 +13,4 @@ keystore.properties
 .DS_Store
 mobile-audit/
 e2e-shots/
+.scratch/
