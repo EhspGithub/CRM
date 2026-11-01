@@ -12,7 +12,7 @@ import { resetBrowserStore } from "../db/index.js";
 export const DEMO_MAX_NEW_PATIENTS = 15;
 export const CONTACT_PHONE = "09143728291";
 const CONTACT_FA = "۰۹۱۴ ۳۷۲ ۸۲۹۱";
-const TELEGRAM_URL = "https://t.me/+989143728291";
+const TELEGRAM_URL = "https://t.me/dr_ehassanpour";
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
