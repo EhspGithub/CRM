@@ -37,7 +37,9 @@ const devStore = {
       r.onerror = () => reject(r.error);
     });
   },
+  disabled: false,
   async save(bytes) {
+    if (this.disabled) return;
     const idb = await this.open();
     return new Promise((resolve, reject) => {
       const tx = idb.transaction("db", "readwrite");
@@ -54,4 +56,13 @@ export async function openStore() {
   const store = new Store(driver);
   await store.migrate();
   return store;
+}
+
+// Browser mode only (online demo): forget the saved database image so the next load starts fresh.
+export function resetBrowserStore() {
+  devStore.disabled = true;
+  return new Promise((resolve) => {
+    const req = indexedDB.deleteDatabase("nasim-rahayi-dev-sqlite");
+    req.onsuccess = req.onerror = req.onblocked = () => resolve();
+  });
 }

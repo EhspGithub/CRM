@@ -672,7 +672,7 @@ function showToast(message, type = 'success') {
     // هشدار خروج امن: جلوگیری از بسته شدن ناخواسته تب مرورگر در هر شرایطی
     window.addEventListener('beforeunload', function (e) {
         // در اپ نصبی، هر تغییر همان لحظه در دیتابیس SQLite ذخیره شده؛ هشدار خروج فقط برای نسخه مرورگری است
-        if (window.NR_NATIVE) return;
+        if (window.NR_NATIVE || window.NR_DEMO) return;
         // لغو رویداد استاندارد برای نمایش دیالوگ امنیتی مرورگر
         e.preventDefault();
         // مرورگرهای مدرن متن سفارشی را نادیده می‌گیرند، اما وجود این خط برای فعال شدن پاپ‌آپ الزامی است

@@ -72,9 +72,22 @@ async function boot() {
   document.documentElement.classList.toggle("nr-native", window.NR_NATIVE);
   if (window.NR_NATIVE) installNativeShims();
 
+  const DEMO = import.meta.env.MODE === "demo";
   let session = null;
   try {
     window.NRStore = await openStore();
+
+    if (DEMO) {
+      // online demo: no login, sample data, locked export/backup (src/demo/demo.js)
+      const demo = await import("./demo/demo.js");
+      const base = import.meta.env.BASE_URL || "/";
+      for (const name of APP_SCRIPTS) await loadScript(`${base}app/${name}.js`);
+      demo.beforeBoot();
+      await window.__nrBoot();
+      await demo.afterBoot();
+      document.getElementById("nr-splash")?.remove();
+      return;
+    }
 
     // login before any patient data is read into memory
     const auth = new Auth(window.NRStore);
