@@ -1,6 +1,201 @@
 // نسیم رهایی — پذیرش و مدیریت مراجعین
 // (اسکریپت کلاسیک؛ همه فایل‌های public/app به ترتیب شماره در یک دامنه سراسری اجرا می‌شوند)
 
+// =====================================================================================
+// سابقه اقامت در کمپ
+// -------------------------------------------------------------------------------------
+// روی پرونده‌ی بیمار دو فیلد:
+//   campHistory : 'دارد' | 'ندارد'   (برای پرونده‌های قدیمی که هنوز ثبت نشده: undefined = «ثبت نشده»)
+//   campStays   : [{ start: '1403/01/05', end: '1403/02/10' | '' }]   — به ترتیب تاریخ شروع
+// پایان خالی یعنی تاریخ پایان نامشخص است یا بیمار هنوز در کمپ است.
+// ویرایشگر (تیک + ردیف‌های تاریخ) هم در فرم پذیرش (پیشوند «p») و هم در ویرایش سریع پرونده (پیشوند «m-p») استفاده می‌شود.
+// =====================================================================================
+function campNormDate(s) {
+    const t = toEnglishDigits(String(s == null ? '' : s)).replace(/[-.]/g, '/').replace(/\s+/g, '');
+    const m = t.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+    if (!m) return null;
+    const y = +m[1], mo = +m[2], d = +m[3];
+    if (y < 1300 || y > 1500 || mo < 1 || mo > 12 || d < 1 || d > (mo <= 6 ? 31 : 30)) return null;
+    return `${y}/${String(mo).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+}
+function campDateMs(s) {
+    const n = campNormDate(s);
+    if (!n) return null;
+    const [gy, gm, gd] = jalaliToGregorian(...n.split('/'));
+    return Date.UTC(gy, gm - 1, gd);
+}
+// تعداد روزهای اقامت (روز شروع و روز پایان هر دو حساب می‌شوند)
+function campStayDays(stay) {
+    const a = campDateMs(stay && stay.start), b = campDateMs(stay && stay.end);
+    if (a === null || b === null || b < a) return null;
+    return Math.round((b - a) / 86400000) + 1;
+}
+function campStaysOf(p) {
+    return (p && Array.isArray(p.campStays) ? p.campStays : [])
+        .map(s => ({ start: campNormDate(s && s.start) || '', end: campNormDate(s && s.end) || '' }))
+        .filter(s => s.start || s.end);
+}
+function campHas(p) { return !!p && (p.campHistory === 'دارد' || campStaysOf(p).length > 0); }
+function campSummary(p) {
+    const stays = campStaysOf(p);
+    let total = 0, known = 0, lastMs = null, last = null;
+    stays.forEach(s => {
+        const d = campStayDays(s);
+        if (d !== null) { total += d; known++; }
+        const ms = campDateMs(s.end) ?? campDateMs(s.start);
+        if (ms !== null && (lastMs === null || ms > lastMs)) { lastMs = ms; last = s; }
+    });
+    return { has: campHas(p), recorded: !!p && (p.campHistory === 'دارد' || p.campHistory === 'ندارد' || stays.length > 0), count: stays.length, totalDays: total, knownDays: known, lastMs, last, stays };
+}
+// متن کوتاه برای گزارش، اکسل و ثبت تغییرات
+function campSummaryText(p, persian = true) {
+    const s = campSummary(p);
+    const f = persian ? toPersianDigits : (x => String(x));
+    if (!s.recorded) return 'ثبت نشده';
+    if (!s.has) return 'ندارد';
+    if (!s.count) return 'دارد (تاریخ ثبت نشده)';
+    const parts = [`${f(s.count)} بار`];
+    if (s.knownDays) parts.push(`${f(s.totalDays)} روز`);
+    const last = s.last;
+    if (last) parts.push(`آخرین: ${f(last.start || '?')} تا ${last.end ? f(last.end) : 'نامشخص'}`);
+    return parts.join(' · ');
+}
+// آیا در N روز گذشته در کمپ بوده (هر بخشی از یک دوره‌ی اقامت در این بازه باشد)
+function campWithinDays(p, days) {
+    const now = Date.now(), from = now - days * 86400000;
+    return campStaysOf(p).some(s => {
+        const a = campDateMs(s.start), b = s.end ? campDateMs(s.end) : now;
+        return a !== null && b !== null && b >= from && a <= now;
+    });
+}
+
+// ---------- ویرایشگر ----------
+function campRowHTML(stay) {
+    const st = stay || {};
+    const dateInput = (kind, label, val) => `
+        <div class="min-w-0">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">${label}</label>
+            <input type="text" data-jdp data-camp="${kind}" value="${escapeHTML(val ? toPersianDigits(val) : '')}" placeholder="روز/ماه/سال"
+                class="w-full px-2 py-1.5 border border-gray-300 rounded-xl text-xs text-center font-yekan outline-none focus:ring-2 focus:ring-amber-300/50 bg-white">
+        </div>`;
+    return `
+        <div class="camp-row grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-end bg-white p-2 rounded-xl border border-amber-100">
+            <span class="camp-row-no w-6 h-6 mb-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black flex items-center justify-center font-yekan"></span>
+            ${dateInput('start', 'شروع اقامت', st.start)}
+            ${dateInput('end', 'پایان اقامت', st.end)}
+            <button type="button" onclick="campRemoveRow(this)" title="حذف این دوره" class="w-8 h-8 mb-0.5 rounded-lg text-rose-500 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+        </div>`;
+}
+function campEditorHTML(prefix, p) {
+    const has = campHas(p);
+    const stays = campStaysOf(p);
+    return `
+        <div id="${prefix}-camp" class="camp-editor bg-amber-50/50 border border-amber-200/70 rounded-2xl p-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                    <input type="checkbox" id="${prefix}-camp-has" onchange="campToggle('${prefix}')" ${has ? 'checked' : ''} class="w-4 h-4 rounded text-amber-600">
+                    <i class="fa-solid fa-campground text-amber-600"></i>
+                    سابقه اقامت در کمپ دارد
+                </label>
+                <span id="${prefix}-camp-count" class="text-[10px] font-bold text-amber-700"></span>
+            </div>
+            <div id="${prefix}-camp-body" class="${has ? '' : 'hidden'} mt-2.5 space-y-2">
+                <div id="${prefix}-camp-rows" class="space-y-2 md:max-w-2xl">${stays.map(campRowHTML).join('')}</div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="campAddRow('${prefix}')" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> افزودن دوره اقامت
+                    </button>
+                    <span class="text-[10px] text-slate-500">اگر تاریخ پایان معلوم نیست یا بیمار هنوز در کمپ است، پایان را خالی بگذارید.</span>
+                </div>
+            </div>
+        </div>`;
+}
+function campRenumber(prefix) {
+    const rows = document.querySelectorAll(`#${prefix}-camp-rows .camp-row`);
+    rows.forEach((r, i) => { const n = r.querySelector('.camp-row-no'); if (n) n.textContent = toPersianDigits(i + 1); });
+    const c = document.getElementById(`${prefix}-camp-count`);
+    const on = document.getElementById(`${prefix}-camp-has`);
+    if (c) c.textContent = on && on.checked && rows.length ? `${toPersianDigits(rows.length)} دوره` : '';
+}
+function campAddRow(prefix, stay) {
+    const box = document.getElementById(`${prefix}-camp-rows`);
+    if (!box) return;
+    box.insertAdjacentHTML('beforeend', campRowHTML(stay));
+    if (typeof bindDigitConverters === 'function') bindDigitConverters();
+    campRenumber(prefix);
+}
+function campRemoveRow(btn) {
+    const editor = btn.closest('.camp-editor');
+    btn.closest('.camp-row').remove();
+    if (editor) campRenumber(editor.id.replace(/-camp$/, ''));
+}
+function campToggle(prefix) {
+    const on = document.getElementById(`${prefix}-camp-has`).checked;
+    document.getElementById(`${prefix}-camp-body`).classList.toggle('hidden', !on);
+    if (on && !document.querySelector(`#${prefix}-camp-rows .camp-row`)) campAddRow(prefix);
+    campRenumber(prefix);
+}
+// خواندن و اعتبارسنجی. خروجی: { ok, error, campHistory, campStays }
+function campRead(prefix) {
+    const has = !!(document.getElementById(`${prefix}-camp-has`) || {}).checked;
+    if (!has) return { ok: true, campHistory: 'ندارد', campStays: [] };
+    const stays = [];
+    const rows = document.querySelectorAll(`#${prefix}-camp-rows .camp-row`);
+    for (let i = 0; i < rows.length; i++) {
+        const rawS = rows[i].querySelector('[data-camp="start"]').value.trim();
+        const rawE = rows[i].querySelector('[data-camp="end"]').value.trim();
+        if (!rawS && !rawE) continue;                                   // ردیف خالی نادیده گرفته می‌شود
+        const n = toPersianDigits(i + 1);
+        const s = campNormDate(rawS), e = rawE ? campNormDate(rawE) : '';
+        if (!rawS) return { ok: false, error: `در ردیف ${n} سابقه کمپ، تاریخ شروع اقامت را وارد کنید.` };
+        if (!s) return { ok: false, error: `تاریخ شروع اقامت در ردیف ${n} معتبر نیست (نمونه: ۱۴۰۳/۰۲/۱۵).` };
+        if (e === null) return { ok: false, error: `تاریخ پایان اقامت در ردیف ${n} معتبر نیست (نمونه: ۱۴۰۳/۰۳/۱۵).` };
+        if (e && campDateMs(e) < campDateMs(s)) return { ok: false, error: `در ردیف ${n} سابقه کمپ، تاریخ پایان قبل از تاریخ شروع است.` };
+        stays.push({ start: s, end: e });
+    }
+    stays.sort((a, b) => campDateMs(a.start) - campDateMs(b.start));
+    return { ok: true, campHistory: 'دارد', campStays: stays };
+}
+// فرم پذیرش: ویرایشگر را (خالی یا با اطلاعات بیمار در حالت ویرایش کامل) در جای خودش می‌سازد
+function campMountAdmission(p) {
+    const mount = document.getElementById('p-camp-mount');
+    if (!mount) return;
+    mount.innerHTML = campEditorHTML('p', p || null);
+    campRenumber('p');
+}
+document.addEventListener('DOMContentLoaded', () => campMountAdmission(null));
+if (document.readyState !== 'loading') campMountAdmission(null);
+document.addEventListener('reset', (e) => { if (e.target && e.target.id === 'patientForm') campMountAdmission(null); }, true);
+
+// نمایش در پرونده‌ی بیمار
+function campCardHTML(p) {
+    const s = campSummary(p);
+    let body;
+    if (!s.recorded) {
+        body = `<span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">ثبت نشده — از «ویرایش سریع» تکمیل کنید</span>`;
+    } else if (!s.has) {
+        body = `<span class="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500 text-[9px]"></i> سابقه اقامت در کمپ ندارد</span>`;
+    } else if (!s.count) {
+        body = `<span class="px-2 py-0.5 bg-amber-100/70 text-amber-800 border border-amber-200 rounded-md text-[10px] font-bold">دارد — تاریخ‌ها ثبت نشده</span>`;
+    } else {
+        body = s.stays.map((st, i) => {
+            const d = campStayDays(st);
+            return `<span class="px-2 py-0.5 bg-white text-amber-800 border border-amber-200 rounded-md text-[10px] font-bold font-yekan shadow-sm">
+                ${toPersianDigits(i + 1)}) ${toPersianDigits(st.start || '?')} تا ${st.end ? toPersianDigits(st.end) : 'نامشخص'}${d !== null ? ` <span class="text-amber-500">(${toPersianDigits(d)} روز)</span>` : ''}
+            </span>`;
+        }).join('');
+    }
+    const head = s.has && s.count ? `<span class="text-[10px] font-black text-amber-700 font-yekan">${toPersianDigits(s.count)} بار${s.knownDays ? ` · مجموع ${toPersianDigits(s.totalDays)} روز` : ''}</span>` : '';
+    return `
+        <div class="p-2 bg-amber-50/40 rounded-xl border border-amber-100 flex flex-col justify-center w-full">
+            <div class="flex items-center justify-between gap-2 mb-1">
+                <span class="text-[10px] text-amber-700 font-bold flex items-center gap-1.5"><i class="fa-solid fa-campground"></i> سابقه اقامت در کمپ</span>
+                ${head}
+            </div>
+            <div class="flex flex-wrap gap-1.5">${body}</div>
+        </div>`;
+}
+
 // 2. PATIENT ADMISSION / INTAKE FORM
 function handleFormSubmit(event) {
     event.preventDefault();
@@ -14,6 +209,12 @@ function handleFormSubmit(event) {
     // and must never block saving or trigger an "invalid national ID" error.
     if (nationalId && !validateIranianNationalId(nationalId)) {
         showCustomAlert("خطای پذیرش مراجع", "کد ملی وارد شده نامعتبر است!");
+        return;
+    }
+
+    const campData = campRead('p');
+    if (!campData.ok) {
+        showCustomAlert("خطای سابقه اقامت در کمپ", campData.error);
         return;
     }
 
@@ -78,6 +279,8 @@ function handleFormSubmit(event) {
         startAge: parseInt(document.getElementById('p-startAge').value) || 0,
         duration: parseInt(document.getElementById('p-duration').value) || 0,
         medHistory: medHistories,
+        campHistory: campData.campHistory,
+        campStays: campData.campStays,
         medicalNotes: document.getElementById('p-medicalNotes').value,
         initialDrug: document.getElementById('p-drug').value,
         initialDosage: parseFloat(document.getElementById('p-dosage').value) || 0,
@@ -102,6 +305,8 @@ function handleFormSubmit(event) {
         if (original.status !== patientPayload.status) logChange(targetId, "وضعیت پرونده", original.status, patientPayload.status);
         if (original.attendance !== patientPayload.attendance) logChange(targetId, "نظم حضور", original.attendance, patientPayload.attendance);
         if (original.deactiveReason !== patientPayload.deactiveReason) logChange(targetId, "علت غیرفعال‌سازی", original.deactiveReason || "-", patientPayload.deactiveReason || "-");
+        const campBefore = campSummaryText(original), campAfter = campSummaryText(patientPayload);
+        if (campBefore !== campAfter) logChange(targetId, "سابقه اقامت در کمپ", campBefore, campAfter);
 
         window.patients[existingIndex] = patientPayload;
         showToast(`اطلاعات مراجع ${patientPayload.fullName} با موفقیت ویرایش شد.`);
@@ -714,6 +919,7 @@ function triggerEditMode(id) {
     }
 
     document.getElementById('p-medicalNotes').value = p.medicalNotes;
+    campMountAdmission(p);
 
     // Drug plans
     document.getElementById('p-drug').value = p.initialDrug;

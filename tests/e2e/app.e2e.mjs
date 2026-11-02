@@ -194,6 +194,43 @@ try {
   check(restored.title === "عنوان بازیابی‌شده", "restored settings are applied");
   check(restored.opium === 0, "stores missing from an old backup are emptied, not left stale");
 
+  // ---------- camp stay history: quick edit, patient file, report filter ----------
+  {
+    const camp = await page.evaluate(async () => {
+      const p = window.patients.find((x) => !x.nationalId || validateIranianNationalId(x.nationalId)) || window.patients[0];
+      openDetailsModal(p.id);
+      toggleModalInlineEdit(true);
+      // the sample national IDs are made up (fail the checksum); the field is optional
+      if (!validateIranianNationalId(normalizeIdentifierValue(document.getElementById("m-p-nationalId").value))) document.getElementById("m-p-nationalId").value = "";
+      document.getElementById("m-p-camp-has").checked = true;
+      campToggle("m-p");
+      campAddRow("m-p");
+      const rows = document.querySelectorAll("#m-p-camp-rows .camp-row");
+      rows[0].querySelector('[data-camp="start"]').value = "۱۴۰۴/۰۵/۰۱";
+      rows[0].querySelector('[data-camp="end"]').value = "1404/06/10";
+      rows[1].querySelector('[data-camp="start"]').value = "1402/01/01";
+      document.querySelector("#modalInlineEditForm button[type=submit]").click();
+      await new Promise((r) => setTimeout(r, 300));
+      const alertOpen = !document.getElementById("custom-alert-modal").classList.contains("hidden");
+      if (alertOpen) return { error: document.getElementById("custom-alert-message").innerText, id: p.id, nid: p.nationalId };
+      const saved = window.patients.find((x) => x.id === p.id);
+      const stored = (await NRStore.getAll("patients")).find((x) => x.id === p.id);
+      const card = document.getElementById("details-modal-body").innerText.includes("سابقه اقامت در کمپ");
+      closeDetailsModal();
+      switchTab("reports-analytics");
+      document.getElementById("rep-filter-camp").value = "has";
+      buildCustomReport();
+      const hits = tableState.reports.data.map((x) => x.id);
+      document.getElementById("rep-filter-camp").value = "";
+      return { saved: saved.campStays, stored: stored.campStays, hasFlag: saved.campHistory, card, inReport: hits.includes(p.id), days: campStayDays(saved.campStays[1]) };
+    });
+    if (camp.error) console.log("camp:", camp);
+    check(camp.hasFlag === "دارد" && camp.saved.length === 2 && camp.saved[0].start === "1402/01/01" && camp.saved[0].end === "" && camp.saved[1].end === "1404/06/10", "camp stays are saved from quick edit (sorted, open end allowed)");
+    check(JSON.stringify(camp.stored) === JSON.stringify(camp.saved), "camp stays are stored in the database");
+    check(camp.days === 41, "camp stay length is counted in days");
+    check(camp.inReport, "report filter «سابقه اقامت در کمپ» finds the patient");
+  }
+
   // ---------- reports + printing preview render ----------
   await page.evaluate(() => { switchTab("reports-analytics"); buildCustomReport(); openPrintPreview(); });
   await sleep(300);

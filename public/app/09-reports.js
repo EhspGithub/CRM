@@ -28,6 +28,7 @@ function resetReportBuilder() {
     document.getElementById('rep-filter-system').value = '';
     document.getElementById('rep-filter-systemReason').value = '';
     document.getElementById('rep-filter-counselor').value = '';
+    if (document.getElementById('rep-filter-camp')) document.getElementById('rep-filter-camp').value = '';
 
     // Reset sort order to default (کد پرونده)
     const sortSelect = document.getElementById('rep-sort-by');
@@ -59,6 +60,7 @@ function resetReportBuilder() {
     document.getElementById('rep-col-admissiondate').checked = false;
     document.getElementById('rep-col-medicalnotes').checked = false;
     document.getElementById('rep-col-systemreason').checked = false;
+    if (document.getElementById('rep-col-camp')) document.getElementById('rep-col-camp').checked = false;
 
     const header = document.getElementById('report-table-header');
     header.innerHTML = '<tr><th class="p-4">جدول خالی</th></tr>';
@@ -194,6 +196,7 @@ function buildCustomReport() {
     const systemReg = document.getElementById('rep-filter-system').value;
     const systemReasonFilterVal = document.getElementById('rep-filter-systemReason').value;
     const counselorFilterVal = document.getElementById('rep-filter-counselor').value;
+    const campFilterVal = (document.getElementById('rep-filter-camp') || {}).value || '';
 
     // Gather initial drug / initial dosage filter values
     const initialDrugFilterVal = document.getElementById('rep-filter-initialDrug').value;
@@ -231,6 +234,17 @@ function buildCustomReport() {
         // (همسو با منطق ستون «علت عدم ثبت در سامانه» در جدول گزارش)
         const systemReasonMatch = systemReasonFilterVal === '' || ((p.systemRegistered || 'خیر') === 'خیر' && p.systemNotRegisteredReason === systemReasonFilterVal);
         const counselorMatch = counselorFilterVal === '' || p.counselor === counselorFilterVal;
+
+        // سابقه اقامت در کمپ
+        let campMatch = true;
+        if (campFilterVal) {
+            const cs = campSummary(p);
+            if (campFilterVal === 'has') campMatch = cs.has;
+            else if (campFilterVal === 'multi') campMatch = cs.count >= 2;
+            else if (campFilterVal === 'recent') campMatch = campWithinDays(p, 365);
+            else if (campFilterVal === 'none') campMatch = cs.recorded && !cs.has;
+            else if (campFilterVal === 'unknown') campMatch = !cs.recorded;
+        }
 
         // Initial drug / initial dosage match (dosage compared against the raw numeric
         // value stored in the system, so unit — mg vs cc — never causes a mismatch)
@@ -275,7 +289,7 @@ function buildCustomReport() {
             });
         }
 
-        return drugMatch && substanceMatch && statusMatch && genderMatch && maritalMatch && insuranceMatch && systemMatch && systemReasonMatch && counselorMatch && ageMatch && medMatch && deactiveReasonMatch && searchMatch && initialDrugMatch && initialDosageMatch && codeMatch;
+        return drugMatch && substanceMatch && statusMatch && genderMatch && maritalMatch && insuranceMatch && systemMatch && systemReasonMatch && counselorMatch && campMatch && ageMatch && medMatch && deactiveReasonMatch && searchMatch && initialDrugMatch && initialDosageMatch && codeMatch;
     });
 
     // مرتب‌سازی صعودی: از کد کمتر در بالا به کد بیشتر در پایین
@@ -301,7 +315,8 @@ function buildCustomReport() {
         lastVisit: document.getElementById('rep-col-lastvisit').checked,
         admissionDate: document.getElementById('rep-col-admissiondate').checked,
         medicalNotes: document.getElementById('rep-col-medicalnotes').checked,
-        systemReason: document.getElementById('rep-col-systemreason').checked
+        systemReason: document.getElementById('rep-col-systemreason').checked,
+        camp: !!(document.getElementById('rep-col-camp') || {}).checked
     };
 
     renderReportBuilderTable(filtered, cols);
@@ -355,6 +370,11 @@ function buildReportRowHTML(p, cols, firstVisitByPatient) {
             }
         }
         rowHTML += `<td class="p-4 text-amber-700 font-bold">${reasonText}</td>`;
+    }
+    if (cols.camp) {
+        const cs = campSummary(p);
+        const txt = campSummaryText(p);
+        rowHTML += `<td class="p-4 text-[11px] font-yekan ${cs.has ? 'text-amber-800 font-bold' : 'text-slate-400'}">${escapeHTML(txt)}</td>`;
     }
 
     return rowHTML;
@@ -413,6 +433,7 @@ function renderReportBuilderTable(dataset, cols) {
     if (cols.admissionDate) trHead.innerHTML += `<th class="p-4">تاریخ پذیرش</th>`;
     if (cols.medicalNotes) trHead.innerHTML += `<th class="p-4 text-[10px]">یادداشت بالینی</th>`;
     if (cols.systemReason) trHead.innerHTML += `<th class="p-4 text-amber-600 font-bold">علت عدم ثبت در سامانه</th>`;
+    if (cols.camp) trHead.innerHTML += `<th class="p-4 text-amber-700 font-bold">سابقه اقامت در کمپ</th>`;
     header.appendChild(trHead);
 
     // PERFORMANCE: build the patientId -> visit lookup once for this render.

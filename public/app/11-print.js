@@ -561,6 +561,15 @@ function generatePatientPrintHTML(p, sections) {
                     ${p.medHistory && p.medHistory.length ? escapeHTML(p.medHistory.join(' - ')) : 'فاقد سابقه بیماری'}
                 </div>
             </div>
+            <div class="border border-slate-300 p-1.5 rounded-lg bg-amber-50/40 text-xs font-semibold mb-2">
+                <span class="block text-[9px] text-amber-800 font-bold mb-0.5">سابقه اقامت در کمپ</span>
+                ${(() => {
+                    const cs = campSummary(p);
+                    if (!cs.has || !cs.count) return escapeHTML(campSummaryText(p));
+                    return cs.stays.map((st, i) => { const d = campStayDays(st); return `<span class="font-yekan">${toPersianDigits(i + 1)}) ${toPersianDigits(st.start || '?')} تا ${st.end ? toPersianDigits(st.end) : 'نامشخص'}${d !== null ? ` (${toPersianDigits(d)} روز)` : ''}</span>`; }).join(' &nbsp;|&nbsp; ')
+                        + `<span class="text-amber-800 font-bold"> — ${toPersianDigits(cs.count)} بار${cs.knownDays ? `، مجموع ${toPersianDigits(cs.totalDays)} روز` : ''}</span>`;
+                })()}
+            </div>
             <div class="border border-slate-300 p-1.5 rounded-lg bg-slate-50/50 text-xs font-semibold">
                 <span class="block text-[9px] text-slate-500 mb-0.5">توضیحات (یادداشت‌های بالینی و روان‌پزشکی)</span>
                 <span class="font-normal leading-relaxed whitespace-pre-wrap">${p.medicalNotes ? escapeHTML(p.medicalNotes) : 'ثبت نشده است.'}</span>

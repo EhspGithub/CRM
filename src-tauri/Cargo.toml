@@ -1,6 +1,6 @@
 [package]
 name = "nasim-rahayi"
-version = "1.1.0"
+version = "1.2.0"
 description = "Nasim Rahayi addiction-treatment clinic management (Windows & Android)"
 edition = "2021"
 publish = false

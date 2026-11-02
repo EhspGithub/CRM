@@ -487,6 +487,9 @@ function renderModalTabBody() {
                         </div>
                     </div>
 
+                    <!-- سابقه اقامت در کمپ -->
+                    <div class="border-t pt-2.5">${campEditorHTML('m-p', p)}</div>
+
                     <!-- Initial Treatment Settings inside Inline Modal (kept fully in sync with the "برنامه درمانی اولیه" section of the Full Edit form: initialDrug / initialDosage / initialPriority) -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 border-t pt-2.5">
                         <div>
@@ -774,6 +777,8 @@ function renderModalTabBody() {
                                     `}
                                 </div>
                             </div>
+
+                            ${campCardHTML(p)}
                         </div>
                     </div>
 
@@ -1312,6 +1317,12 @@ window.saveModalInlineChanges = function(event) {
         }
     }
 
+    const campData = campRead('m-p');
+    if (!campData.ok) {
+        showCustomAlert("خطای سابقه اقامت در کمپ", campData.error);
+        return;
+    }
+
     const isInsuranceChanged = p.insurance !== document.getElementById('m-p-insurance').value;
     const medHistories = [];
     document.querySelectorAll('input[name="m-p-med"]:checked').forEach(chk => {
@@ -1402,6 +1413,13 @@ window.saveModalInlineChanges = function(event) {
     p.attendance = formStatus === 'غیرفعال' ? 'غیبت' : formAttendance;
     p.insurance = formInsurance;
     p.systemRegistered = formSystemRegistered;
+    {
+        const campBefore = campSummaryText(p);
+        const campAfter = campSummaryText({ campHistory: campData.campHistory, campStays: campData.campStays });
+        if (campBefore !== campAfter) logChange(p.id, "سابقه اقامت در کمپ", campBefore, campAfter);
+    }
+    p.campHistory = campData.campHistory;
+    p.campStays = campData.campStays;
     p.medHistory = medHistories;
     p.medicalNotes = document.getElementById('m-p-medicalNotes').value;
     p.deactiveReason = formStatus === 'غیرفعال' ? deReason : '';

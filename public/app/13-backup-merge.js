@@ -43,7 +43,7 @@ const MERGE_FIELD_LABELS = {
     drug: 'دارو', quantity: 'مقدار', dosage: 'دوز', prevDrug: 'داروی قبلی', newDrug: 'داروی جدید',
     medHistory: 'سوابق پزشکی', dispenseHistory: 'تاریخچه ارائه دارو', birthdate: 'تاریخ تولد',
     job: 'شغل', employment: 'اشتغال', marital: 'وضعیت تأهل', admissionDate: 'تاریخ پذیرش',
-    substance: 'ماده مصرفی', attempts: 'دفعات ترک'
+    substance: 'ماده مصرفی', attempts: 'دفعات ترک', campHistory: 'سابقه اقامت در کمپ', campStays: 'دوره‌های اقامت در کمپ'
 };
 function mergeFieldLabel(f) { return MERGE_FIELD_LABELS[f] || f; }
 
@@ -70,6 +70,10 @@ function getRecordDiffFields(a, b) {
 
 function formatMergeValue(v) {
     if (v === undefined || v === null || v === '') return '<span class="text-slate-300 italic">خالی</span>';
+    if (Array.isArray(v) && v.length && v.every(x => x && typeof x === 'object' && 'start' in x)) {
+        // دوره‌های اقامت در کمپ
+        return escapeHTML(v.map(x => `${toPersianDigits(x.start || '?')} تا ${x.end ? toPersianDigits(x.end) : 'نامشخص'}`).join('، '));
+    }
     if (Array.isArray(v)) return v.length ? escapeHTML(v.join('، ')) : '<span class="text-slate-300 italic">خالی</span>';
     if (typeof v === 'object') return escapeHTML(JSON.stringify(v));
     return escapeHTML(String(v));

@@ -337,6 +337,7 @@
         { key: 'status', label: 'وضعیت پرونده', getValue: p => p.status, defaultChecked: true },
         { key: 'attendance', label: 'نظم حضور', getValue: p => p.attendance, defaultChecked: true },
         { key: 'medHistory', label: 'بیماری‌های زمینه‌ای', getValue: p => (p.medHistory && p.medHistory.length ? p.medHistory.join(' - ') : ''), defaultChecked: true },
+        { key: 'campHistory', label: 'سابقه اقامت در کمپ', getValue: p => campSummaryText(p, false), defaultChecked: true },
         { key: 'medicalNotes', label: 'توضیحات بالینی', getValue: p => p.medicalNotes, defaultChecked: true },
         { key: 'deactiveReason', label: 'علت غیرفعال‌سازی', getValue: p => p.deactiveReason || '', defaultChecked: true }
     ];
