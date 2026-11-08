@@ -1,3 +1,14 @@
+# Node / Web / Tauri (Windows)
+node_modules/
+dist/
+dist-demo/
+src-tauri/target/
+src-tauri/gen/
+mobile-audit/
+e2e-shots/
+.scratch/
+
+# Android / Gradle
 .gradle/
 build/
 app/build/
@@ -5,6 +16,10 @@ app/build/
 .build-outputs/
 local.properties
 dist-android/
+.idea/
+*.iml
+
+# Secrets & Keystores
 *.jks
 *.keystore
 keystore.properties
@@ -12,5 +27,3 @@ keystore.properties
 .env.*
 !.env.example
 .DS_Store
-.idea/
-*.iml

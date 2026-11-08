@@ -1,5 +1,7 @@
-name: Build Android APK
+name: Build (Windows & Android)
 
+# Every push/PR: restores Windows (Tauri) files if missing, builds Windows installer (.exe/.msi) + Android APK (.apk).
+# Pushing a tag like v1.0.0 additionally publishes them as a GitHub Release.
 on:
   push:
     branches: [main]
@@ -8,22 +10,147 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
-  android:
-    name: Build Native Android APK (Kotlin & Compose)
+  test:
+    name: Sync Windows Files & Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore Windows (Tauri/Web) files from history if missing
+        run: |
+          if [ ! -f src-tauri/Cargo.toml ]; then
+            WIN_COMMIT=$(git log --all -n 1 --format="%H" -- src-tauri/Cargo.toml)
+            if [ -n "$WIN_COMMIT" ]; then
+              echo "Restoring Windows/Tauri files from commit $WIN_COMMIT"
+              git checkout "$WIN_COMMIT" -- \
+                package.json package-lock.json index.html \
+                postcss.config.js tailwind.config.js vite.config.js \
+                public src src-tauri tests scripts CHANGELOG.md 2>/dev/null || true
+              if [ -n "$(git status --porcelain)" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                git config user.name "github-actions[bot]"
+                git config user.email "github-actions[bot]@users.noreply.github.com"
+                git add package.json package-lock.json index.html postcss.config.js tailwind.config.js vite.config.js public src src-tauri tests scripts CHANGELOG.md
+                git commit -m "chore: keep Windows (Tauri) desktop files alongside Android [skip ci]" || true
+                git push origin HEAD:main || true
+              fi
+            fi
+          fi
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: clippy
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Unit tests (SQLite data layer)
+        run: npm test
+
+      - name: Production build of the UI
+        run: npm run build
+
+      - name: Rust tests + lint (database crate)
+        working-directory: src-tauri
+        run: |
+          cargo test -p nasim-db --locked
+          cargo clippy -p nasim-db --all-targets --locked -- -D warnings
+
+  windows:
+    name: Windows installer (.exe & .msi)
+    needs: test
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure Windows (Tauri/Web) files are present
+        shell: bash
+        run: |
+          if [ ! -f src-tauri/Cargo.toml ]; then
+            WIN_COMMIT=$(git log --all -n 1 --format="%H" -- src-tauri/Cargo.toml)
+            if [ -n "$WIN_COMMIT" ]; then
+              git checkout "$WIN_COMMIT" -- \
+                package.json package-lock.json index.html \
+                postcss.config.js tailwind.config.js vite.config.js \
+                public src src-tauri tests scripts CHANGELOG.md 2>/dev/null || true
+            fi
+          fi
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - id: ver
+        shell: bash
+        run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Build Windows installer (NSIS .exe + MSI)
+        run: npx tauri build
+
+      - name: Upload Windows Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NasimRahayi-Windows-v${{ steps.ver.outputs.v }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+
+  android:
+    name: Android APK
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -46,7 +173,7 @@ jobs:
             fi
           fi
 
-      - name: Build Debug & Release APK
+      - name: Build Android APK
         run: gradle assembleDebug assembleRelease --no-daemon
 
       - name: Prepare APK artifacts
@@ -65,7 +192,7 @@ jobs:
   release:
     name: Publish GitHub Release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [android]
+    needs: [windows, android]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -77,6 +204,8 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: |
+            release-files/**/*.exe
+            release-files/**/*.msi
             release-files/**/*.apk
           generate_release_notes: true
           fail_on_unmatched_files: true
