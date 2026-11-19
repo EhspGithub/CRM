@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Nasim Rahayi",
+  "mainBinaryName": "nasim-rahayi",
+  "version": "../package.json",
+  "identifier": "com.nasimrahayi.clinic",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "سامانه مدیریت کلینیک نسیم رهایی",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 380,
+        "minHeight": 560,
+        "center": true,
+        "maximized": true
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' 'unsafe-inline'",
+        "style-src": "'self' 'unsafe-inline'",
+        "font-src": "'self' data:",
+        "img-src": "'self' data: blob:",
+        "connect-src": "'self' blob: ipc: http://ipc.localhost",
+        "object-src": "'none'",
+        "base-uri": "'self'",
+        "form-action": "'none'"
+      },
+      "dangerousDisableAssetCspModification": ["script-src", "style-src"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Business",
+    "copyright": "Nasim Rahayi Clinic",
+    "shortDescription": "سامانه مدیریت کلینیک ترک اعتیاد",
+    "longDescription": "مدیریت پرونده مراجعین، ویزیت، ارائه دارو، مدیریت اپیوم، گزارش‌گیری و پشتیبان‌گیری؛ همه داده‌ها روی همین دستگاه در SQLite ذخیره می‌شوند و هیچ داده‌ای به اینترنت ارسال نمی‌شود.",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": { "installMode": "currentUser" }
+    },
+    "android": {
+      "minSdkVersion": 24
+    }
+  }
+}

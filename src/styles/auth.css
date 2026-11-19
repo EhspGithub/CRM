@@ -1,0 +1,102 @@
+/* ===== Login / lock screen («نسیم» = breeze: drifting light + flowing wind lines) ===== */
+#nr-auth {
+  position: fixed; inset: 0; z-index: 300;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  color: #e6f4f5; font-family: 'Vazirmatn', sans-serif;
+  background:
+    radial-gradient(120% 80% at 85% 0%, #0f5f69 0%, transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, #123a52 0%, transparent 60%),
+    linear-gradient(160deg, #0a1520 0%, #0d2231 55%, #0b1b28 100%);
+  transition: opacity .5s ease, visibility .5s;
+}
+#nr-auth.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* drifting glows */
+#nr-auth .auth-glow { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: .55; pointer-events: none; will-change: transform; }
+#nr-auth .auth-glow.g1 { width: 46vmax; height: 46vmax; background: #0d8390; top: -14vmax; right: -12vmax; animation: authDrift1 18s ease-in-out infinite alternate; }
+#nr-auth .auth-glow.g2 { width: 38vmax; height: 38vmax; background: #1e5f8f; bottom: -16vmax; left: -10vmax; opacity: .4; animation: authDrift2 22s ease-in-out infinite alternate; }
+#nr-auth .auth-glow.g3 { width: 22vmax; height: 22vmax; background: #5eead4; top: 40%; left: 55%; opacity: .14; animation: authDrift3 16s ease-in-out infinite alternate; }
+@keyframes authDrift1 { to { transform: translate(-8vmax, 10vmax) scale(1.15); } }
+@keyframes authDrift2 { to { transform: translate(10vmax, -6vmax) scale(1.1); } }
+@keyframes authDrift3 { to { transform: translate(-14vmax, -8vmax) scale(1.3); } }
+
+/* flowing breeze lines */
+#nr-auth .auth-breeze { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .7; }
+#nr-auth .auth-breeze path { fill: none; stroke: url(#authBreezeGrad); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 220 900; animation: authFlow 9s linear infinite; }
+#nr-auth .auth-breeze path:nth-child(2) { animation-duration: 12s; animation-delay: -4s; stroke-width: 1.1; }
+#nr-auth .auth-breeze path:nth-child(3) { animation-duration: 10s; animation-delay: -7s; }
+#nr-auth .auth-breeze path:nth-child(4) { animation-duration: 14s; animation-delay: -2s; stroke-width: .9; }
+#nr-auth .auth-breeze path:nth-child(5) { animation-duration: 11s; animation-delay: -9s; stroke-width: 1.3; }
+@keyframes authFlow { from { stroke-dashoffset: 1120; } to { stroke-dashoffset: 0; } }
+
+/* layout */
+#nr-auth .auth-wrap { position: relative; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; padding: calc(2rem + env(safe-area-inset-top)) 1rem calc(1.5rem + env(safe-area-inset-bottom)); }
+#nr-auth .auth-brand { text-align: center; animation: authDrop .8s cubic-bezier(.2,.9,.25,1.2) both; }
+#nr-auth .auth-logo { position: relative; width: 84px; height: 84px; margin: 0 auto 1rem; border-radius: 26px; display: flex; align-items: center; justify-content: center; font-size: 38px; color: #fff;
+  background: linear-gradient(145deg, #14a3b1, #0a6874); box-shadow: 0 18px 40px -12px rgba(13,131,144,.7), inset 0 1px 0 rgba(255,255,255,.25); animation: authFloat 5s ease-in-out infinite; }
+#nr-auth .auth-logo::before, #nr-auth .auth-logo::after { content: ""; position: absolute; inset: -10px; border-radius: 32px; border: 1.5px solid rgba(94,234,212,.35); animation: authRing 3.2s ease-out infinite; }
+#nr-auth .auth-logo::after { animation-delay: 1.6s; }
+@keyframes authFloat { 50% { transform: translateY(-6px); } }
+@keyframes authRing { from { transform: scale(.9); opacity: .9; } to { transform: scale(1.45); opacity: 0; } }
+@keyframes authDrop { from { opacity: 0; transform: translateY(-24px) scale(.92); } to { opacity: 1; transform: none; } }
+#nr-auth .auth-title { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: -.01em; }
+#nr-auth .auth-sub { margin-top: .25rem; font-size: .78rem; font-weight: 600; color: #8fb3bf; }
+
+#nr-auth .auth-card { width: 100%; max-width: 400px; padding: 1.6rem 1.4rem 1.4rem; border-radius: 1.6rem;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  border: 1px solid rgba(255,255,255,.14); box-shadow: 0 30px 60px -20px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+  animation: authRise .7s .12s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes authRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+#nr-auth .auth-card.shake { animation: authShake .45s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes authShake { 10%,90% { transform: translateX(-2px); } 20%,80% { transform: translateX(4px); } 30%,50%,70% { transform: translateX(-7px); } 40%,60% { transform: translateX(7px); } }
+#nr-auth .auth-card > * { animation: authFade .5s both; }
+#nr-auth .auth-card > *:nth-child(2) { animation-delay: .22s; } #nr-auth .auth-card > *:nth-child(3) { animation-delay: .28s; }
+#nr-auth .auth-card > *:nth-child(4) { animation-delay: .34s; } #nr-auth .auth-card > *:nth-child(5) { animation-delay: .40s; }
+#nr-auth .auth-card > *:nth-child(6) { animation-delay: .46s; } #nr-auth .auth-card > *:nth-child(7) { animation-delay: .52s; }
+@keyframes authFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+#nr-auth .auth-heading { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: .2rem; }
+#nr-auth .auth-hint { font-size: .74rem; line-height: 1.7; color: #9cc0cb; margin-bottom: 1.1rem; }
+#nr-auth .auth-field { position: relative; margin-bottom: .85rem; }
+#nr-auth .auth-field label { display: block; font-size: .72rem; font-weight: 700; color: #b7d3db; margin-bottom: .35rem; }
+#nr-auth .auth-field .auth-ico { position: absolute; right: .95rem; bottom: .9rem; font-size: .9rem; color: #6f97a4; transition: color .2s; pointer-events: none; }
+#nr-auth .auth-field input { width: 100%; height: 48px; border-radius: .9rem; padding: 0 2.6rem 0 2.8rem; font-size: 16px; font-weight: 600; color: #fff;
+  background: rgba(6,20,30,.55); border: 1px solid rgba(255,255,255,.12); outline: none; transition: border-color .2s, box-shadow .2s, background .2s; }
+#nr-auth .auth-field input::placeholder { color: #5f8794; font-weight: 500; }
+#nr-auth .auth-field input:focus { border-color: #2dd4bf; background: rgba(6,20,30,.75); box-shadow: 0 0 0 4px rgba(45,212,191,.16); }
+#nr-auth .auth-field input:focus ~ .auth-ico { color: #5eead4; }
+#nr-auth .auth-field input.ltr { direction: ltr; text-align: left; letter-spacing: .08em; font-family: ui-monospace, Consolas, monospace; text-transform: uppercase; }
+#nr-auth .auth-eye { position: absolute; left: .55rem; bottom: .45rem; width: 36px; height: 36px; border-radius: .7rem; color: #7fa6b2; display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s; }
+#nr-auth .auth-eye:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+#nr-auth .auth-btn { position: relative; width: 100%; height: 50px; margin-top: .4rem; border-radius: .95rem; font-size: .95rem; font-weight: 800; color: #fff; overflow: hidden;
+  background: linear-gradient(135deg, #14b8c6 0%, #0d8390 55%, #0a6a75 100%); box-shadow: 0 14px 28px -12px rgba(20,184,198,.8);
+  transition: transform .15s, box-shadow .2s, filter .2s; display: flex; align-items: center; justify-content: center; gap: .55rem; }
+#nr-auth .auth-btn::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.28), transparent); animation: authShine 3.6s ease-in-out infinite; }
+@keyframes authShine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+#nr-auth .auth-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 18px 32px -12px rgba(20,184,198,.95); }
+#nr-auth .auth-btn:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+#nr-auth .auth-btn:disabled { filter: grayscale(.5) brightness(.8); cursor: not-allowed; }
+#nr-auth .auth-btn:disabled::after { display: none; }
+#nr-auth .auth-spin { width: 18px; height: 18px; border-radius: 9999px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: authSpin .7s linear infinite; }
+@keyframes authSpin { to { transform: rotate(360deg); } }
+
+#nr-auth .auth-link { display: block; margin: 1rem auto 0; font-size: .76rem; font-weight: 700; color: #7dd3c8; transition: color .2s; }
+#nr-auth .auth-link:hover { color: #fff; }
+#nr-auth .auth-error { display: none; align-items: flex-start; gap: .5rem; margin-bottom: .9rem; padding: .65rem .8rem; border-radius: .8rem; font-size: .76rem; font-weight: 700; line-height: 1.7;
+  color: #fecdd3; background: rgba(225,29,72,.14); border: 1px solid rgba(251,113,133,.3); }
+#nr-auth .auth-error.show { display: flex; animation: authFade .3s both; }
+
+#nr-auth .auth-code { direction: ltr; text-align: center; font-family: ui-monospace, Consolas, monospace; font-size: clamp(1rem, 5.2vw, 1.35rem); font-weight: 800; letter-spacing: .06em; white-space: nowrap; color: #fff;
+  padding: 1rem .5rem; border-radius: 1rem; background: rgba(6,20,30,.6); border: 1.5px dashed rgba(94,234,212,.5); user-select: all; }
+#nr-auth .auth-check { display: flex; align-items: center; gap: .6rem; margin-top: 1rem; font-size: .8rem; font-weight: 700; color: #d5ebef; cursor: pointer; }
+#nr-auth .auth-check input { width: 20px; height: 20px; accent-color: #14b8c6; }
+#nr-auth .auth-chip { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .7rem; border-radius: 9999px; font-size: .7rem; font-weight: 700; background: rgba(255,255,255,.08); color: #b7d3db; }
+#nr-auth .auth-foot { font-size: .68rem; font-weight: 600; color: #6f8f9b; text-align: center; animation: authFade .6s .6s both; }
+
+/* success: card and brand lift away, the app is revealed underneath */
+#nr-auth.is-leaving .auth-card, #nr-auth.is-leaving .auth-brand { transform: translateY(-14px) scale(.96); opacity: 0; transition: transform .45s ease, opacity .45s ease; }
+
+@media (max-height: 640px) { #nr-auth .auth-logo { width: 64px; height: 64px; font-size: 28px; border-radius: 20px; margin-bottom: .6rem; } #nr-auth .auth-title { font-size: 1.25rem; } #nr-auth .auth-wrap { gap: 1rem; } }
+@media (prefers-reduced-motion: reduce) { #nr-auth *, #nr-auth *::before, #nr-auth *::after { animation: none !important; transition: none !important; } }

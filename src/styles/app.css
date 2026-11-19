@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== styles carried over from the single-file version (v90) ===== */
+/* Report filters: hide number spinners; default ("all") select value shown in gray */
+input.no-spin::-webkit-outer-spin-button, input.no-spin::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input.no-spin { -moz-appearance: textfield; appearance: textfield; }
+.rep-filter-grid select:has(option[value=""]:checked) { color: #64748b; }
+.rep-filter-grid select option { color: #334155; }
+
+body {
+    font-family: 'Vazirmatn', sans-serif;
+    background-color: #f0f4f8;
+}
+/* BYekan had no reliable offline-downloadable source; falling back to local Vazirmatn */
+.font-yekan {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+.bg-teal-brand {
+    background-color: #0d8390;
+}
+.text-teal-brand {
+    color: #0d8390;
+}
+.hover-bg-teal:hover {
+    background-color: #0b6f7a;
+}
+.bg-dark-sidebar {
+    background-color: #111d2c;
+}
+.sidebar-active {
+    background-color: #1a2f44;
+    border-right: 4px solid #0d8390;
+}
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+/* Keyframe Fade-In Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* --- گزارش بررسی پرونده‌ها: ردیف ۶ کارتی کامپکت --- */
+@media (min-width: 1024px) {
+    .review-stats-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, 2.2fr); }
+}
+.review-defi-card #rep-review-deficiency-breakdown > span {
+    padding: 1px 8px;
+    border-radius: 6px;
+    line-height: 1.6;
+}
+
+/* Printable Styles for Medical Reports */
+@media print {
+    html, body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10pt !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+    }
+    .no-print, header, aside, button, select, input, textarea, .badge-status {
+        display: none !important;
+    }
+    #printable-report-area, #printable-patient-area, #printable-dashboard-area, #printable-list-area {
+        display: none !important;
+    }
+    #printable-report-area.print-active, #printable-patient-area.print-active, #printable-dashboard-area.print-active, #printable-list-area.print-active {
+        display: block !important;
+        width: 100% !important;
+        position: relative !important;
+        background-color: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .print-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 15px !important;
+    }
+    .print-table th {
+        background-color: #ffffff !important;
+        border: 1px solid #000000 !important;
+        padding: 6px !important;
+        font-size: 10pt !important;
+    }
+    .print-table td {
+        background-color: #ffffff !important;
+        border: 1px solid #000000 !important;
+        padding: 5px !important;
+        font-size: 9pt !important;
+    }
+
+    /* کلاس جلوگیری از دو تیکه شدن عناصر در پرینت */
+    .print-avoid-break {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    @page {
+        margin: 1.5cm; /* حاشیه امن برای جلوگیری از تداخل با هدر و فوتر پیش‌فرض مرورگر */
+    }
+}
+#printable-report-area, #printable-patient-area, #printable-dashboard-area, #printable-list-area {
+    display: none;
+}
+
+/* ===== گزارش تفصیلی مصرف اپیوم: وسط‌چین، عرض بهینه و تک‌خطی بودن ردیف‌ها ===== */
+#opium-report-card table.op-report-table { width: 100%; table-layout: auto; border-collapse: collapse; }
+#opium-report-card table.op-report-table thead th,
+#opium-report-card table.op-report-table tbody td { text-align: center; vertical-align: middle; white-space: nowrap; padding-left: 10px; padding-right: 10px; width: 1%; }
+#opium-report-card table.op-report-table thead th.op-col-name,
+#opium-report-card table.op-report-table tbody td.op-col-name { width: auto; min-width: 230px; }
+#opium-report-card table.op-report-table tbody td { padding-top: 8px; padding-bottom: 8px; }
+/* ردیف چک‌باکس اولویت‌ها (تک‌ردیف، بدون منوی بازشونده و بدون تغییر ارتفاع) */
+#opium-total-prio-list { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; overflow-x: auto; min-height: 32px; padding: 2px 0; }
+#opium-total-prio-list label.op-prio-chk { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; font-size: 11px; font-weight: 700; color: #475569; cursor: pointer; user-select: none; white-space: nowrap; transition: background-color .12s, border-color .12s; }
+#opium-total-prio-list label.op-prio-chk.is-on { background: #f0fdfa; border-color: #5eead4; color: #115e59; }
+#opium-total-prio-list label.op-prio-chk input { width: 14px; height: 14px; margin: 0; }
+/* جدول گزارش خلاصه (راست‌چین، یک ردیف عنوان + یک ردیف اطلاعات) */
+#opium-report-summary table.op-sum-table { width: 100%; min-width: 980px; table-layout: auto; border-collapse: collapse; background: #fff; }
+#opium-report-summary table.op-sum-table th { background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 800; padding: 9px 10px; border: 1px solid #e2e8f0; text-align: center; vertical-align: middle; }
+#opium-report-summary table.op-sum-table td { border: 1px solid #e2e8f0; padding: 10px; vertical-align: top; text-align: center; font-size: 12px; color: #334155; }
+#opium-report-summary .op-sum-box { display: inline-block; min-width: 110px; text-align: right; }
+#opium-report-summary .op-sum-line { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; line-height: 1.9; }
+#opium-report-summary .op-sum-line .op-k { font-weight: 700; color: #475569; white-space: nowrap; }
+#opium-report-summary .op-sum-line .op-v { font-weight: 800; color: #0f172a; white-space: nowrap; }
+#opium-report-summary .op-sum-sep { height: 0; border-top: 1px solid #5eead4; margin: 4px 0; }
+#opium-report-summary .op-sum-total .op-k, #opium-report-summary .op-sum-total .op-v { color: #115e59; }
+#opium-report-summary .op-sum-big { font-size: 15px; font-weight: 900; color: #0f172a; }
+#opium-report-summary .op-sum-muted { font-size: 10px; font-weight: 700; color: #94a3b8; }
+#opium-report-summary .op-sum-warn { font-size: 11px; font-weight: 800; color: #e11d48; }
+/* برچسب «با تأخیر» زیر اولویت: ریز، بدون حاشیه و بدون پس‌زمینه */
+#opium-report-card table.op-report-table .op-late-note { display: block; font-size: 9px; font-weight: 400; line-height: 1.2; color: #dc2626; margin-top: 1px; }
+
+#mobile-bottom-nav button.m-nav-active { color: #0d8390; }
+#mobile-bottom-nav button.m-nav-active .m-nav-ico { background: #e6f4f5; }
+#mobile-nav-sheet button.m-sheet-active { background: #e6f4f5; border-color: #5eead4; color: #0f766e; }
+@keyframes mSheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.m-sheet-up { animation: mSheetUp .22s ease-out; }
+
+@media screen and (max-width: 767.98px) {
+    body { height: 100dvh !important; }
+    .app-main { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
+    .app-header { padding-top: calc(.5rem + env(safe-area-inset-top)); }
+
+    /* جلوگیری از زوم خودکار iOS روی فیلدها + لمس راحت‌تر */
+    .app-main input:not([type=checkbox]):not([type=radio]),
+    .app-main select, .app-main textarea,
+    .fixed.inset-0 input:not([type=checkbox]):not([type=radio]),
+    .fixed.inset-0 select, .fixed.inset-0 textarea { font-size: 16px !important; min-height: 42px; }
+    .app-main input[type=checkbox], .fixed.inset-0 input[type=checkbox] { width: 18px; height: 18px; }
+
+    /* فاصله‌گذاری فشرده‌تر کارت‌ها و فرم‌ها */
+    .app-main .p-8, .app-main .p-6 { padding: 1rem !important; }
+    .app-main .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
+    .app-main .rounded-3xl { border-radius: 1.25rem; }
+
+    /* نوار زیرتب‌ها: اسکرول افقی به‌جای چندخطی شدن */
+    .m-tabstrip { flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .m-tabstrip::-webkit-scrollbar { display: none; }
+    .m-tabstrip > button { flex: 0 0 auto; white-space: nowrap; padding: .6rem .9rem !important; }
+
+    /* کارت‌های آماری داشبورد: دو ستونه و فشرده */
+    #dashboard-stat-cards > div { padding: .75rem !important; }
+    #dashboard-stat-cards > div > div:last-child { position: absolute; top: .6rem; left: .6rem; width: 1.9rem; height: 1.9rem; padding: 0 !important; border-radius: .6rem; display: flex; align-items: center; justify-content: center; }
+    #dashboard-stat-cards > div > div:last-child i { font-size: .8rem !important; }
+    #dashboard-stat-cards > div > div:first-child > p:first-child { padding-left: 2.2rem; min-height: 2rem; line-height: 1rem; }
+    #dashboard-stat-cards h3 { font-size: 1.6rem !important; }
+
+    /* مودال‌ها به‌شکل Bottom-Sheet تمام‌عرض */
+    body > .fixed.inset-0[id$="-modal"]:not(#custom-alert-modal):not(#custom-confirm-modal) { padding: 0 !important; align-items: flex-end !important; }
+    body > .fixed.inset-0[id$="-modal"]:not(#custom-alert-modal):not(#custom-confirm-modal) > div {
+        max-width: 100% !important; width: 100% !important; max-height: 94dvh !important;
+        border-radius: 1.25rem 1.25rem 0 0 !important; overflow-y: auto;
+        padding-bottom: env(safe-area-inset-bottom);
+        animation: mSheetUp .22s ease-out;
+    }
+    #custom-alert-modal > div, #custom-confirm-modal > div { max-width: calc(100% - 1rem) !important; }
+
+    /* جدول‌های فهرستی → کارت (بدون اسکرول افقی) */
+    table.m-card-table { background: transparent; }
+    table.m-card-table, table.m-card-table tbody { display: block; width: 100%; }
+    table.m-card-table thead { display: none; }
+    table.m-card-table tbody { padding: 4px 10px 10px; border: 0 !important; }
+    table.m-card-table tbody > tr { display: block; background: #fff; border: 1px solid #e2e8f0 !important; border-radius: 14px; margin-top: 10px; padding: 4px 12px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    table.m-card-table tbody > tr > td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 7px 0 !important; border: 0 !important; border-bottom: 1px dashed #eef2f6 !important; text-align: left; min-height: 34px; width: auto !important; white-space: normal !important; }
+    table.m-card-table tbody > tr > td:last-child { border-bottom: 0 !important; }
+    table.m-card-table tbody > tr > td[data-label]::before { content: attr(data-label); font-size: 11px; font-weight: 700; color: #64748b; text-align: right; flex-shrink: 0; max-width: 45%; }
+    table.m-card-table tbody > tr > td:first-child { font-size: 13px; }
+    table.m-card-table tbody > tr > td[colspan] { display: block; text-align: center; }
+    table.m-card-table tbody > tr > td > * { max-width: 62%; }
+    table.m-card-table tbody > tr > td select { margin: 0 !important; }
+    table.m-card-table tbody > tr > td .flex-col { align-items: flex-end !important; }
+
+    /* سایر جدول‌ها (گزارش‌ها): اسکرول افقی نرم */
+    .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+
+    /* v90: فوتر پرونده بیمار — یک ردیف فشرده (دکمه بستن در سربرگ موجود است) */
+    .details-modal-footer { padding: .6rem .75rem calc(.6rem + env(safe-area-inset-bottom)) !important; flex-wrap: nowrap !important; }
+    .details-modal-footer > button:first-child { display: none; }
+    .details-modal-footer > div { width: 100%; flex-wrap: nowrap !important; }
+    .details-modal-footer > div > button { flex: 1 1 0; padding: .65rem .3rem !important; font-size: 11px !important; white-space: nowrap; justify-content: center; }
+
+    /* v90: فیلترهای گزارش‌ساز دو ستونه روی گوشی */
+    .rep-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: .5rem !important; row-gap: .9rem !important; }
+    .rep-filter-grid > div:first-child { grid-column: span 2 / span 2; }
+    .rep-filter-grid label { font-size: 11px; }
+}
+

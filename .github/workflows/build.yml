@@ -1,6 +1,6 @@
 name: Build (Windows & Android)
 
-# Every push/PR: restores Windows (Tauri) files if missing, builds Windows installer (.exe/.msi) + Android APK (.apk).
+# Every push/PR: builds the Windows installer (.exe/.msi, Tauri) + the native Android APK (.apk, Kotlin/Compose).
 # Pushing a tag like v1.0.0 additionally publishes them as a GitHub Release.
 on:
   push:
@@ -21,34 +21,12 @@ env:
 
 jobs:
   test:
-    name: Sync Windows Files & Run Tests
+    name: Tests (web UI + SQLite crate)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout repository with full history
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Restore Windows (Tauri/Web) files from history if missing
-        run: |
-          if [ ! -f src-tauri/Cargo.toml ]; then
-            WIN_COMMIT=$(git log --all -n 1 --format="%H" -- src-tauri/Cargo.toml)
-            if [ -n "$WIN_COMMIT" ]; then
-              echo "Restoring Windows/Tauri files from commit $WIN_COMMIT"
-              git checkout "$WIN_COMMIT" -- \
-                package.json package-lock.json index.html \
-                postcss.config.js tailwind.config.js vite.config.js \
-                public src src-tauri tests scripts CHANGELOG.md 2>/dev/null || true
-              if [ -n "$(git status --porcelain)" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-                git config user.name "github-actions[bot]"
-                git config user.email "github-actions[bot]@users.noreply.github.com"
-                git add package.json package-lock.json index.html postcss.config.js tailwind.config.js vite.config.js public src src-tauri tests scripts CHANGELOG.md
-                git commit -m "chore: keep Windows (Tauri) desktop files alongside Android [skip ci]" || true
-                git push origin HEAD:main || true
-              fi
-            fi
-          fi
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
@@ -88,23 +66,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - name: Checkout repository with full history
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Ensure Windows (Tauri/Web) files are present
-        shell: bash
-        run: |
-          if [ ! -f src-tauri/Cargo.toml ]; then
-            WIN_COMMIT=$(git log --all -n 1 --format="%H" -- src-tauri/Cargo.toml)
-            if [ -n "$WIN_COMMIT" ]; then
-              git checkout "$WIN_COMMIT" -- \
-                package.json package-lock.json index.html \
-                postcss.config.js tailwind.config.js vite.config.js \
-                public src src-tauri tests scripts CHANGELOG.md 2>/dev/null || true
-            fi
-          fi
 
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
