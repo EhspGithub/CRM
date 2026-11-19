@@ -1,25 +1,25 @@
-# Node / Web / Tauri (Windows)
+# Build output (npm run build) and dependencies
 node_modules/
 dist/
-dist-demo/
+
+# Tests
+test-results/
+playwright-report/
+
+# Windows (Tauri / Rust)
 src-tauri/target/
 src-tauri/gen/
-mobile-audit/
-e2e-shots/
-.scratch/
 
-# Android / Gradle
+# Android (Gradle)
 .gradle/
 build/
-app/build/
 .kotlin/
-.build-outputs/
 local.properties
 dist-android/
 .idea/
 *.iml
 
-# Secrets & Keystores
+# Secrets & keystores
 *.jks
 *.keystore
 keystore.properties

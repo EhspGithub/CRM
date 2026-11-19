@@ -1,0 +1,52 @@
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-dark-sidebar text-gray-300 flex flex-col justify-between hidden md:flex no-print">
+            <div class="py-6 flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="px-6 mb-4">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">منوی اصلی سامانه</p>
+                    </div>
+                    <nav class="space-y-1">
+                        <button onclick="switchTab('dashboard')" id="btn-dashboard" class="sidebar-active w-full flex items-center px-6 py-3.5 text-sm font-medium transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-chart-line text-lg w-6"></i>
+                            <span>داشبورد</span>
+                        </button>
+                        <button onclick="switchTab('add-patient')" id="btn-add-patient" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-user-plus text-lg w-6"></i>
+                            <span>پذیرش</span>
+                        </button>
+                        <button onclick="switchTab('patients-list')" id="btn-patients-list" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-users-gear text-lg w-6"></i>
+                            <span>مدیریت</span>
+                        </button>
+                        <button onclick="switchTab('follow-ups')" id="btn-follow-ups" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-notes-medical text-lg w-6"></i>
+                            <span>ویزیت</span>
+                        </button>
+                        <!-- NEW DISPENSE MENU ITEM -->
+                        <button onclick="switchTab('dispense')" id="btn-dispense" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-pills text-lg w-6"></i>
+                            <span>ارائه دارو</span>
+                        </button>
+                        <!-- NEW OPIUM MANAGEMENT MENU ITEM -->
+                        <button onclick="switchTab('opium')" id="btn-opium" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-flask text-lg w-6"></i>
+                            <span>مدیریت اپیوم</span>
+                        </button>
+                        <button onclick="switchTab('reports-analytics')" id="btn-reports-analytics" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-file-invoice-dollar text-lg w-6"></i>
+                            <span>گزارش‌گیری</span>
+                        </button>
+                        <button onclick="switchTab('settings')" id="btn-settings" class="w-full flex items-center px-6 py-3.5 text-sm font-medium hover:bg-gray-800 transition duration-150 text-right space-x-3 space-x-reverse">
+                            <i class="fa-solid fa-sliders text-lg w-6"></i>
+                            <span>تنظیمات</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-800 bg-gray-950/40 text-[11px] text-gray-500 text-center leading-relaxed">
+                ذخیره‌سازی: IndexedDB مرورگر روی همین دستگاه<br>
+                سامانه نسیم رهایی - پایدار و امن
+                <div id="sidebar-backup-status" class="mt-2 text-[10px] font-bold transition-colors duration-500"></div>
+            </div>
+        </aside>

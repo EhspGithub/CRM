@@ -1,7 +1,7 @@
 name: Build (Windows & Android)
 
-# Every push/PR: builds the Windows installer (.exe/.msi, Tauri) + the native Android APK (.apk, Kotlin/Compose).
-# Pushing a tag like v1.0.0 additionally publishes them as a GitHub Release.
+# Every push/PR: tests the web app, then builds the Windows installer (.exe/.msi, Tauri) and the
+# Android APK (WebView wrapper) from the same src/. Pushing a tag like v2.0.0 also publishes a Release.
 on:
   push:
     branches: [main]
@@ -16,49 +16,30 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   test:
-    name: Tests (web UI + SQLite crate)
+    name: Tests (structure + end-to-end)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Set up Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-          components: clippy
-
-      - name: Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Unit tests (SQLite data layer)
+      - run: npm ci
+      - name: Structure tests
         run: npm test
-
-      - name: Production build of the UI
-        run: npm run build
-
-      - name: Rust tests + lint (database crate)
-        working-directory: src-tauri
-        run: |
-          cargo test -p nasim-db --locked
-          cargo clippy -p nasim-db --all-targets --locked -- -D warnings
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests (desktop + phone screen)
+        run: npm run test:e2e
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: test-results/
 
   windows:
     name: Windows installer (.exe & .msi)
@@ -66,37 +47,22 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Set up Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
-      - name: Rust cache
-        uses: Swatinem/rust-cache@v2
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-
-      - name: Install npm dependencies
-        run: npm ci
-
+      - run: npm ci
       - id: ver
         shell: bash
         run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-
       - name: Build Windows installer (NSIS .exe + MSI)
         run: npx tauri build
-
-      - name: Upload Windows Installer Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: NasimRahayi-Windows-v${{ steps.ver.outputs.v }}
           if-no-files-found: error
@@ -110,45 +76,43 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+          node-version: 22
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 9.3.1
-
-      - name: Ensure debug.keystore exists
+      - id: ver
+        run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Release signing key (optional repository secrets)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          if [ ! -f debug.keystore ]; then
-            if [ -f debug.keystore.base64 ]; then
-              base64 -d debug.keystore.base64 > debug.keystore
-            else
-              keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-            fi
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set: the release APK is signed with a temporary debug key and cannot update an existing install."
           fi
-
-      - name: Build Android APK
-        run: gradle assembleDebug assembleRelease --no-daemon
-
-      - name: Prepare APK artifacts
+      - name: Build APKs
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle -p android assembleDebug assembleRelease --no-daemon
+      - name: Collect APKs
         run: |
           mkdir -p dist-android
-          cp app/build/outputs/apk/debug/app-debug.apk dist-android/NasimRahayi-debug.apk
-          cp app/build/outputs/apk/release/app-release.apk dist-android/NasimRahayi-release.apk
-
-      - name: Upload Android APK Artifact
-        uses: actions/upload-artifact@v4
+          cp android/app/build/outputs/apk/release/app-release.apk "dist-android/NasimRahayi-v${{ steps.ver.outputs.v }}.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "dist-android/NasimRahayi-v${{ steps.ver.outputs.v }}-debug.apk"
+      - uses: actions/upload-artifact@v4
         with:
-          name: NasimRahayi-Android-APK
+          name: NasimRahayi-Android-v${{ steps.ver.outputs.v }}
           if-no-files-found: error
           path: dist-android/*.apk
 
@@ -157,8 +121,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [windows, android]
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:

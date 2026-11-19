@@ -1,0 +1,30 @@
+    <!-- Excel Export Column Selection Modal -->
+    <div id="excel-export-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 animate-fade-in no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 max-h-[88vh] flex flex-col">
+            <div class="bg-teal-brand p-5 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-table-columns text-lg"></i>
+                    <h3 class="text-sm font-bold">انتخاب ستون‌های خروجی اکسل</h3>
+                </div>
+                <button onclick="closeExcelExportModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar text-xs">
+                <p class="text-slate-500 mb-3">ستون‌هایی که می‌خواهید در فایل خروجی درج شوند را انتخاب کنید:</p>
+                <div class="flex gap-2 mb-3">
+                    <button type="button" onclick="toggleAllExcelExportColumns(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-[11px] transition">انتخاب همه</button>
+                    <button type="button" onclick="toggleAllExcelExportColumns(false)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-[11px] transition">لغو همه</button>
+                </div>
+                <div id="excel-export-columns-list" class="grid grid-cols-2 gap-2 font-bold text-slate-700">
+                    <!-- Filled dynamically from EXCEL_EXPORT_COLUMNS -->
+                </div>
+            </div>
+            <div class="p-5 border-t bg-slate-50 flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="closeExcelExportModal()" class="px-4 py-2 border rounded-xl hover:bg-white text-xs font-bold transition">انصراف</button>
+                <button type="button" onclick="generateExcelExport()" class="px-5 py-2 bg-teal-brand hover-bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-download"></i> دانلود فایل اکسل
+                </button>
+            </div>
+        </div>
+    </div>

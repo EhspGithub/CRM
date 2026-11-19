@@ -1,0 +1,97 @@
+    <!-- ================= OPIUM: DELIVERY MODAL (ثبت / ویرایش / ابطال تحویل) ================= -->
+    <div id="opium-delivery-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full overflow-hidden border border-slate-100 max-h-[94vh] flex flex-col animate-fade-in">
+            <div class="shrink-0 bg-teal-700 p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-flask text-lg"></i>
+                    <h3 class="text-sm font-bold">مدیریت تحویل اپیوم</h3>
+                </div>
+                <button onclick="closeOpiumDeliveryModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-circle-xmark text-lg"></i></button>
+            </div>
+            <div class="shrink-0 bg-slate-50 border-b p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold text-slate-700">
+                <div>کد پرونده: <span id="op-m-code" class="text-teal-700">---</span></div>
+                <div>بیمار: <span id="op-m-name" class="text-slate-800">---</span></div>
+                <div>داروی فعلی در پرونده: <span id="op-m-drug" class="text-indigo-600">---</span></div>
+                <div>اولویت: <span id="op-m-priority" class="text-rose-600">---</span></div>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 min-h-0 custom-scrollbar space-y-5 text-xs">
+                <div id="op-d-editbar" class="hidden flex items-center justify-between gap-2 bg-sky-50 border border-sky-200 rounded-xl px-4 py-2.5">
+                    <span class="text-[11px] font-extrabold text-sky-800"><i class="fa-solid fa-pen-to-square ml-1"></i> در حال ویرایش یک تحویل ثبت‌شده — مقادیر وابسته پس از ثبت دوباره محاسبه می‌شوند.</span>
+                    <button type="button" onclick="cancelOpiumDeliveryEdit()" class="px-3 py-1 bg-white border border-sky-200 hover:bg-sky-100 text-sky-700 rounded-lg text-[11px] font-bold">انصراف از ویرایش</button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <label for="op-m-shift" class="font-bold text-slate-700 whitespace-nowrap">شیفت مراجعه</label>
+                        <select id="op-m-shift" onchange="opSetVisitShift(this.value)" class="px-3 py-1.5 border border-gray-300 rounded-xl text-xs font-bold bg-white outline-none focus:border-teal-brand">
+                            <option value="">— انتخاب نشده —</option>
+                            <option value="شنبه">شنبه</option>
+                            <option value="یکشنبه">یکشنبه</option>
+                            <option value="دوشنبه">دوشنبه</option>
+                            <option value="سه‌شنبه">سه‌شنبه</option>
+                            <option value="چهارشنبه">چهارشنبه</option>
+                            <option value="پنجشنبه">پنجشنبه</option>
+                        </select>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500">روز ثابت مراجعه هفتگی بیمار؛ مستقل از «روز هفته مراجعه بعدی» که از تاریخ تحویل محاسبه می‌شود. با انتخاب، بلافاصله ذخیره می‌شود.</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">دوز روزانه (سی‌سی) <span class="text-red-500">*</span></label>
+                        <input type="number" id="op-d-dose" min="0" step="any" oninput="opDelRecalc()" class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none focus:border-teal-700 font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">تاریخ تحویل (شمسی) <span class="text-red-500">*</span></label>
+                        <input type="text" id="op-d-date" data-jdp autocomplete="off" oninput="opDelRecalc()" class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none focus:border-teal-700 font-bold text-center" placeholder="روز/ماه/سال">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">تعداد روزهای تحویل <span class="text-red-500">*</span></label>
+                        <input type="number" id="op-d-days" min="1" step="1" oninput="opDelRecalc()" class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none focus:border-teal-700 font-bold text-center">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-teal-50/60 border border-teal-100 rounded-2xl p-4">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 mb-1">حجم کل تحویل</p>
+                        <p id="op-d-total" class="text-sm font-black text-teal-800">—</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 mb-1">تاریخ مراجعه بعدی</p>
+                        <p id="op-d-next" class="text-sm font-black text-teal-800">—</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 mb-1">روز هفته مراجعه بعدی</p>
+                        <p id="op-d-weekday" class="text-sm font-black text-teal-800">—</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" onclick="submitOpiumDelivery()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow transition flex items-center gap-1.5"><i class="fa-solid fa-check"></i> <span id="op-d-submit-label">ثبت تحویل</span></button>
+                </div>
+
+                <div>
+                    <p class="text-[11px] font-extrabold text-slate-700 mb-2">تاریخچه تحویل دارو به مددجو</p>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-right border-collapse">
+                            <thead class="bg-slate-50 text-slate-600 text-[11px] font-bold border-b border-gray-200">
+                                <tr>
+                                    <th class="p-2.5">تاریخ تحویل</th>
+                                    <th class="p-2.5 text-center">دوز روزانه</th>
+                                    <th class="p-2.5 text-center">تعداد روز</th>
+                                    <th class="p-2.5 text-center">حجم کل تحویل (سی‌سی)</th>
+                                    <th class="p-2.5">تاریخ مراجعه بعدی</th>
+                                    <th class="p-2.5 text-center">اقدام</th>
+                                </tr>
+                            </thead>
+                            <tbody id="op-hist-body" class="text-[11px] divide-y divide-gray-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="shrink-0 bg-slate-100 px-6 py-3 flex justify-end border-t border-slate-200">
+                <button onclick="closeOpiumDeliveryModal()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-900 transition">بستن</button>
+            </div>
+        </div>
+    </div>

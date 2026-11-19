@@ -1,28 +1,15 @@
 [package]
 name = "nasim-rahayi"
-version = "1.2.0"
-description = "Nasim Rahayi addiction-treatment clinic management (Windows & Android)"
+version = "2.0.0"
+description = "Nasim Rahayi addiction-treatment clinic management (Windows)"
 edition = "2021"
 publish = false
 
-[workspace]
-members = ["crates/nasim-db"]
-
-[lib]
-# staticlib/cdylib are required for the Android build; rlib for the desktop binary
-name = "nasim_rahayi_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
-
 [build-dependencies]
-tauri-build = { version = "2.7", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-nasim-db = { path = "crates/nasim-db" }
-tauri = { version = "2.12", features = [] }
-tauri-plugin-dialog = "2.8"
-tauri-plugin-fs = "2.7"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+tauri = { version = "2", features = [] }
 
 [profile.release]
 codegen-units = 1

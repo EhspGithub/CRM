@@ -1,0 +1,24 @@
+    <!-- NEW: Smart Backup Merge - Conflict Review Modal -->
+    <div id="merge-review-modal" class="hidden fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 z-[100] animate-fade-in no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-100">
+            <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-code-merge text-teal-brand"></i> بررسی موارد تعارض ادغام
+                    </h3>
+                    <p class="text-[10px] text-slate-400 mt-1">این موارد در دستگاه شما و فایل بکاپ به‌صورت متفاوت ثبت شده‌اند. لطفاً برای هرکدام تصمیم بگیرید تا هیچ اطلاعاتی از دست نرود.</p>
+                </div>
+                <button type="button" onclick="bulkResolveKeepBoth()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[10px] font-bold transition whitespace-nowrap">
+                    <i class="fa-solid fa-shield-halved ml-1"></i>انتخاب سریع و امن: نگه‌داشتن هر دو نسخه برای همه موارد
+                </button>
+            </div>
+            <div id="merge-review-body" class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-5 bg-slate-50/50"></div>
+            <div class="p-4 border-t border-slate-100 flex items-center justify-between flex-shrink-0 bg-white gap-3">
+                <span id="merge-resolve-counter" class="text-[11px] text-slate-500 font-bold whitespace-nowrap">۰ از ۰ مورد بررسی شد</span>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeMergeReviewModal()" class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-bold transition">انصراف از ادغام</button>
+                    <button type="button" id="btn-apply-merge" disabled onclick="applyMergeSession(window.__mergeSession)" class="px-5 py-2 bg-teal-brand hover-bg-teal text-white rounded-xl text-xs font-bold transition shadow opacity-40 cursor-not-allowed">اعمال ادغام</button>
+                </div>
+            </div>
+        </div>
+    </div>

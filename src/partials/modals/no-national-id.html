@@ -1,0 +1,37 @@
+    <!-- Patients Missing National ID: List + Print Modal -->
+    <div id="no-nationalid-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 animate-fade-in no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 max-h-[88vh] flex flex-col">
+            <div class="bg-amber-500 p-5 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-id-card text-lg"></i>
+                    <h3 class="text-sm font-bold">پرونده‌های بدون کد ملی</h3>
+                </div>
+                <button onclick="closeNoNationalIdModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar text-xs flex-1">
+                <p class="text-slate-500 mb-3 font-bold">تعداد: <span id="no-nid-modal-count" class="text-amber-600 font-black">۰</span> پرونده</p>
+                <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                    <table class="w-full text-right border-collapse text-[11px]">
+                        <thead class="bg-slate-50 text-slate-600 font-bold border-b border-gray-200">
+                            <tr>
+                                <th class="p-2.5">کد پرونده</th>
+                                <th class="p-2.5">نام و نام خانوادگی</th>
+                                <th class="p-2.5">شماره تماس</th>
+                                <th class="p-2.5">تاریخ پذیرش</th>
+                                <th class="p-2.5">وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="no-nid-modal-body" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="p-5 border-t bg-slate-50 flex justify-end gap-2 shrink-0">
+                <button type="button" onclick="closeNoNationalIdModal()" class="px-4 py-2 border rounded-xl hover:bg-white text-xs font-bold transition">بستن</button>
+                <button type="button" onclick="printNoNationalIdList()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> چاپ / خروجی PDF
+                </button>
+            </div>
+        </div>
+    </div>

@@ -1,13 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Least-privilege permissions for the main window. No network access at all; file access is limited to files the user picks in the open/save dialog.",
+  "description": "The page only needs the WebView itself; no native commands are exposed.",
   "windows": ["main"],
-  "permissions": [
-    "core:default",
-    "dialog:allow-open",
-    "dialog:allow-save",
-    "fs:allow-read-text-file",
-    "fs:allow-write-text-file"
-  ]
+  "permissions": ["core:default"]
 }

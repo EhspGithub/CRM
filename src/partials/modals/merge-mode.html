@@ -1,0 +1,26 @@
+    <!-- NEW: Smart Backup Merge - Mode Selection Modal -->
+    <div id="merge-mode-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-[100] animate-fade-in no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 p-6 space-y-5">
+            <div class="flex items-center gap-3 text-teal-brand">
+                <i class="fa-solid fa-code-compare text-2xl"></i>
+                <h3 class="text-sm font-extrabold text-slate-800">نحوه بازیابی فایل پشتیبان</h3>
+            </div>
+            <div id="merge-mode-file-info" class="text-[11px] text-slate-500 bg-slate-50 border border-slate-100 rounded-xl p-3 leading-relaxed"></div>
+            <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                لطفاً روش ترکیب اطلاعات این فایل با اطلاعات فعلی این دستگاه را انتخاب کنید:
+            </p>
+            <div class="space-y-3">
+                <button type="button" onclick="startSmartMerge()" class="w-full text-right px-4 py-3 border-2 border-teal-200 hover:border-teal-brand bg-teal-50/50 rounded-xl transition group">
+                    <span class="flex items-center gap-2 text-teal-brand text-xs font-extrabold"><i class="fa-solid fa-code-merge"></i> ادغام هوشمند (پیشنهادی)</span>
+                    <span class="block text-[10px] text-slate-500 mt-1 leading-relaxed">اطلاعات این فایل با اطلاعات فعلی دستگاه ترکیب می‌شود. رکوردهای جدید هر دو طرف حفظ می‌گردد و در صورت وجود تعارض، پیش از اعمال از شما پرسیده می‌شود. هیچ اطلاعاتی به‌صورت خودکار حذف نمی‌شود.</span>
+                </button>
+                <button type="button" onclick="confirmFullRestore()" class="w-full text-right px-4 py-3 border-2 border-rose-200 hover:border-rose-400 bg-rose-50/50 rounded-xl transition group">
+                    <span class="flex items-center gap-2 text-rose-600 text-xs font-extrabold"><i class="fa-solid fa-server"></i> بازیابی کامل (جایگزینی)</span>
+                    <span class="block text-[10px] text-slate-500 mt-1 leading-relaxed">تمام اطلاعات فعلی این دستگاه با اطلاعات این فایل به‌طور کامل جایگزین می‌شود و تغییراتی که در این فایل نیستند از بین می‌روند.</span>
+                </button>
+            </div>
+            <div class="flex justify-end pt-1">
+                <button type="button" onclick="closeMergeModeModal()" class="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-xl text-xs font-bold transition">انصراف</button>
+            </div>
+        </div>
+    </div>

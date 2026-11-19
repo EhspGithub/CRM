@@ -1,0 +1,199 @@
+            <!-- ================= OPIUM MANAGEMENT TAB ================= -->
+            <section id="tab-opium" class="hidden space-y-6 no-print">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-teal-brand"></i> مدیریت اپیوم
+                    </h2>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- تاریخ شروع دوره توزیع: مبنای پیش‌فرض آمار مصرف دوره‌ی جاری -->
+                        <div class="flex flex-wrap items-end gap-2 bg-white border border-gray-100 rounded-2xl px-3 py-2 shadow-sm w-full md:w-auto">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">تاریخ شروع دوره توزیع</label>
+                                <input type="text" id="opium-period-start" data-jdp autocomplete="off" class="w-32 px-2 py-1.5 border border-gray-300 rounded-lg text-xs outline-none focus:border-teal-brand text-center font-bold" placeholder="روز/ماه/سال">
+                            </div>
+                            <button onclick="opAddPeriod()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold rounded-lg transition whitespace-nowrap">شروع دوره‌ی جدید</button>
+                            <button onclick="openOpiumPeriodsModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-clock-rotate-left"></i> دوره‌ها</button>
+                            <span id="opium-period-current" class="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-100 rounded-lg px-2 py-1.5 whitespace-nowrap"></span>
+                        </div>
+                        <button onclick="openOpiumAddModal()" class="px-4 py-2 bg-teal-brand hover:bg-teal-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition shadow-sm">
+                            <i class="fa-solid fa-user-plus"></i> افزودن بیمار
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opium Sub-Tab Navigation Menu -->
+                <div class="m-tabstrip flex border-b border-slate-200 bg-white p-2 rounded-2xl shadow-sm gap-2 flex-wrap">
+                    <button onclick="switchOpiumSubTab('list')" id="btn-opium-sub-list" class="px-5 py-2.5 text-xs font-bold border-b-2 border-teal-brand text-teal-brand bg-teal-50/50 transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-users text-sm"></i>
+                        <span>فهرست بیماران مدیریت اپیوم</span>
+                    </button>
+                    <button onclick="switchOpiumSubTab('report')" id="btn-opium-sub-report" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-table-list text-sm"></i>
+                        <span>گزارش تفصیلی مصرف اپیوم</span>
+                    </button>
+                </div>
+
+                <!-- ============ SUB-TAB: فهرست بیماران مدیریت اپیوم ============ -->
+                <div id="opium-sub-tab-list" class="space-y-6">
+
+                <!-- Date range -->
+                <div class="bg-white px-3.5 py-2.5 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div id="opium-period-select-wrap" class="hidden">
+                            <select id="opium-period-select" onchange="opOnPeriodChange()" title="دوره‌ی توزیع (مبنای پیش‌فرض آمار)" class="w-48 px-2.5 py-1.5 border border-gray-300 rounded-lg text-[11px] outline-none focus:border-teal-brand bg-white font-bold"></select>
+                        </div>
+                        <input type="text" id="opium-range-from" data-jdp autocomplete="off" oninput="opOnRangeChange()" onchange="opOnRangeChange()" title="تاریخ شروع" class="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-[11px] outline-none focus:border-teal-brand text-center font-bold" placeholder="از تاریخ">
+                        <span class="text-slate-300 text-xs">—</span>
+                        <input type="text" id="opium-range-to" data-jdp autocomplete="off" oninput="opOnRangeChange()" onchange="opOnRangeChange()" title="تاریخ پایان" class="w-24 px-2.5 py-1.5 border border-gray-300 rounded-lg text-[11px] outline-none focus:border-teal-brand text-center font-bold" placeholder="تا تاریخ">
+                        <button onclick="opSetRangeThisMonth()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition whitespace-nowrap">ماه جاری</button>
+                        <button onclick="opClearRange()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-lg transition whitespace-nowrap">پاک کردن بازه دستی</button>
+                        <p id="opium-range-label" class="text-[10px] font-bold text-slate-500"></p>
+                        <div class="mr-auto flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-100 whitespace-nowrap">
+                            <span class="text-[10px] font-bold text-slate-500">دورترین مراجعه بعدی:</span>
+                            <span class="text-xs font-black text-teal-800 font-yekan" id="opium-farthest-date">—</span>
+                            <span id="opium-farthest-weekday" class="text-[10px] font-bold text-slate-500 font-sans"></span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">آمار مصرف فقط از «تحویل‌های معتبر ثبت‌شده» در بازه‌ی انتخابی محاسبه می‌شود؛ تحویل‌های ابطال‌شده در مصرف واقعی حساب نمی‌شوند. <span id="opium-basis-note" class="font-bold text-slate-600"></span></p>
+                </div>
+
+                <!-- Stat cards (rendered by JS) -->
+                <div id="opium-stats" class="grid grid-cols-2 lg:grid-cols-5 gap-2"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-[11px] font-extrabold text-slate-700 mb-2">مراجعه بعدی بیماران بر اساس روز هفته <span class="text-slate-400 font-bold">(از آخرین تحویل هر بیمار)</span></p>
+                        <div id="opium-weekday-strip" class="grid grid-cols-7 gap-2"></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-[11px] font-extrabold text-slate-700 mb-2">تعداد بیماران بر اساس اولویت</p>
+                        <div id="opium-priority-strip" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Members table -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-slate-50/50 space-y-3">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <h3 class="text-sm font-extrabold text-slate-800">فهرست بیماران مدیریت اپیوم <span id="opium-table-count" class="text-xs text-slate-400 font-bold"></span></h3>
+                            <span id="opium-card-filter-chip" class="hidden"></span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">جست‌وجو (نام، کد پرونده، کد ملی)</label>
+                                <input type="text" id="opium-search" oninput="renderOpiumTable()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand" placeholder="جست‌وجو در فهرست...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">اولویت</label>
+                                <select id="opium-filter-priority" onchange="renderOpiumTable()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">روز مراجعه بعدی</label>
+                                <select id="opium-filter-weekday" onchange="renderOpiumTable()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">وضعیت تحویل</label>
+                                <select id="opium-filter-status" onchange="renderOpiumTable()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white">
+                                    <option value="">همه وضعیت‌ها</option>
+                                    <option value="none">بدون تحویل</option>
+                                    <option value="delivered">دارای تحویل</option>
+                                    <option value="followup">مراجعه معوق</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label class="inline-flex items-center gap-2 text-[11px] font-bold text-slate-500 cursor-pointer">
+                            <input type="checkbox" id="opium-show-removed" onchange="renderOpiumTable()" class="rounded text-teal-brand w-4 h-4">
+                            نمایش بیماران حذف‌شده از فهرست (سوابق آن‌ها محفوظ است)
+                        </label>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-right border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-[11px] font-bold border-b border-gray-200">
+                                    <th class="p-2">ردیف</th>
+                                    <th class="p-2">نام و نام خانوادگی</th>
+                                    <th class="p-2">کد ملی</th>
+                                    <th class="p-2">کد پرونده</th>
+                                    <th class="p-2">تاریخ پذیرش</th>
+                                    <th class="p-2 text-center">اولویت</th>
+                                    <th class="p-2 text-center">دوز روزانه (سی‌سی)</th>
+                                    <th class="p-2">تاریخ تحویل</th>
+                                    <th class="p-2 text-center">مجموع حجم (سی‌سی)</th>
+                                    <th class="p-2">مراجعه بعدی</th>
+                                    <th class="p-2">شیفت مراجعه</th>
+                                    <th class="p-2 text-center">عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="opium-table-body" class="text-xs divide-y divide-gray-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                </div>
+                <!-- ============ /SUB-TAB: فهرست بیماران مدیریت اپیوم ============ -->
+
+                <!-- ============ SUB-TAB: گزارش تفصیلی مصرف اپیوم ============ -->
+                <div id="opium-sub-tab-report" class="space-y-6 hidden">
+
+                <!-- Detailed consumption report -->
+                <div id="opium-report-card" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-slate-50/50 space-y-3">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <h3 class="text-sm font-extrabold text-slate-800">گزارش تفصیلی مصرف اپیوم <span id="opium-report-range-label" class="text-xs text-slate-400 font-bold"></span></h3>
+                            <div class="flex items-center gap-2">
+                                <label class="flex items-center gap-1.5 px-2 py-2 text-[11px] font-bold text-slate-600 cursor-pointer select-none"><input type="checkbox" id="opium-report-show-removed" onchange="renderOpiumReport()" class="rounded text-teal-brand w-4 h-4"> نمایش بیماران حذف‌شده</label>
+                                <button onclick="opiumExportReportCSV()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-xl flex items-center gap-1.5 transition"><i class="fa-solid fa-file-excel"></i> خروجی اکسل</button>
+                                <button onclick="openOpiumPrintColsModal()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold rounded-xl flex items-center gap-1.5 transition"><i class="fa-solid fa-print"></i> چاپ</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">نوع نمایش</label>
+                                <select id="opium-report-mode" onchange="renderOpiumReport()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white">
+                                    <option value="detail">تجمیعی بیماران (هر بیمار یک ردیف)</option>
+                                    <option value="patient">به تفکیک بیمار</option>
+                                    <option value="day">به تفکیک روز</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">بیمار (نام یا کد)</label>
+                                <input type="text" id="opium-report-search" oninput="renderOpiumReport()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand" placeholder="جست‌وجو...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">اولویت</label>
+                                <select id="opium-report-priority" onchange="renderOpiumReport()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">روز مراجعه بعدی</label>
+                                <select id="opium-report-weekday" onchange="renderOpiumReport()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">وضعیت تأخیر</label>
+                                <select id="opium-report-delay" onchange="renderOpiumReport()" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-xs outline-none focus:border-teal-brand bg-white disabled:opacity-50">
+                                    <option value="all">نمایش همه بیماران</option>
+                                    <option value="hide">عدم نمایش بیماران دارای تأخیر</option>
+                                    <option value="only">فقط بیماران دارای تأخیر</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap shrink-0">اولویت‌های مشمول محاسبه مجموع تحویل</span>
+                            <div id="opium-total-prio-list" class="custom-scrollbar min-w-0" role="group" aria-label="اولویت‌های مشمول محاسبه مجموع تحویل"></div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button type="button" onclick="opTotalPrioSetAll(true)" class="px-2 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg text-[10px] font-bold whitespace-nowrap">همه</button>
+                                <button type="button" onclick="opTotalPrioSetAll(false)" class="px-2 py-1 bg-white border border-gray-300 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg text-[10px] font-bold whitespace-nowrap">هیچ‌کدام</button>
+                            </div>
+                        </div>
+                        <div id="opium-report-sortbar" class="flex items-center flex-wrap gap-2"></div>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-right border-collapse op-report-table">
+                            <thead id="opium-report-head"></thead>
+                            <tbody id="opium-report-body" class="text-xs divide-y divide-gray-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div id="opium-report-summary" class="px-4 py-4 border-t-2 border-teal-200 bg-slate-50/50 overflow-x-auto custom-scrollbar"></div>
+                </div>
+
+                </div>
+                <!-- ============ /SUB-TAB: گزارش تفصیلی مصرف اپیوم ============ -->
+            </section>

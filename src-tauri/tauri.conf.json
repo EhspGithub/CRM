@@ -6,7 +6,7 @@
   "identifier": "com.nasimrahayi.clinic",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:5173",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
@@ -24,34 +24,33 @@
       }
     ],
     "security": {
-      "csp": {
-        "default-src": "'self'",
-        "script-src": "'self' 'unsafe-inline'",
-        "style-src": "'self' 'unsafe-inline'",
-        "font-src": "'self' data:",
-        "img-src": "'self' data: blob:",
-        "connect-src": "'self' blob: ipc: http://ipc.localhost",
-        "object-src": "'none'",
-        "base-uri": "'self'",
-        "form-action": "'none'"
-      },
-      "dangerousDisableAssetCspModification": ["script-src", "style-src"]
+      "csp": null
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "nsis",
+      "msi"
+    ],
     "category": "Business",
     "copyright": "Nasim Rahayi Clinic",
     "shortDescription": "سامانه مدیریت کلینیک ترک اعتیاد",
-    "longDescription": "مدیریت پرونده مراجعین، ویزیت، ارائه دارو، مدیریت اپیوم، گزارش‌گیری و پشتیبان‌گیری؛ همه داده‌ها روی همین دستگاه در SQLite ذخیره می‌شوند و هیچ داده‌ای به اینترنت ارسال نمی‌شود.",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "longDescription": "مدیریت پرونده مراجعین، ویزیت، ارائه دارو، مدیریت اپیوم، گزارش‌گیری و پشتیبان‌گیری؛ همه داده‌ها روی همین دستگاه ذخیره می‌شوند.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
     "windows": {
-      "webviewInstallMode": { "type": "downloadBootstrapper" },
-      "nsis": { "installMode": "currentUser" }
-    },
-    "android": {
-      "minSdkVersion": 24
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
     }
   }
 }

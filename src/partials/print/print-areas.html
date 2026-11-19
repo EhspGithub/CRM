@@ -1,0 +1,51 @@
+    <!-- HIDDEN PRINT AREA -->
+    <div id="printable-report-area" class="w-full p-8 font-sans" dir="rtl">
+        <div class="flex justify-between items-center border-b-2 border-slate-800 pb-4 mb-6">
+            <div>
+                <h1 id="print-clinic-name" class="text-xl font-black text-slate-950">کلینیک تخصصی ترک اعتیاد و درمان</h1>
+                <p id="print-clinic-sub" class="text-xs text-slate-700 mt-1">گزارش رسمی وضعیت مراجعین</p>
+            </div>
+            <div class="text-left text-xs text-slate-800 leading-relaxed">
+                <div><strong>تاریخ گزارش:</strong> <span id="print-current-date">---</span></div>
+                <div><strong>نوع سند:</strong> گزارش آماری و وضعیت درمانی طولی مراجعین</div>
+                <div><strong>دسترسی:</strong> محرمانه / پزشک معالج</div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <span class="text-xs font-bold">تعداد کل رکوردهای استخراج شده در این گزارش: </span>
+            <span id="print-report-count" class="text-xs font-black">۰</span> پرونده
+        </div>
+        <table class="print-table">
+            <thead id="printable-table-header">
+                <!-- Dynamic headers printed -->
+            </thead>
+            <tbody id="printable-table-body">
+                <!-- Dynamically Populated right before print command -->
+            </tbody>
+        </table>
+        <div class="mt-16 flex justify-between items-center text-xs text-slate-800">
+            <div>
+                <p class="font-bold">مهر و امضای مسئول فنی / پزشک معالج:</p>
+                <div class="h-16 w-32 border border-dashed border-slate-800 mt-2 rounded-lg flex items-center justify-center text-slate-400">محل مهر کلینیک</div>
+            </div>
+            <div class="text-left">
+                <p>سامانه مدیریت کلینیک - نسخه آفلاین و هوشمند</p>
+                <p class="text-[9px] text-slate-600 mt-1">تولید شده به صورت خودکار از پایگاه داده لپ‌تاپ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW HIDDEN PRINT AREA FOR SINGLE PATIENT DOSSIER -->
+    <div id="printable-patient-area" class="w-full p-8 font-sans" dir="rtl">
+        <!-- Dynamically Populated -->
+    </div>
+
+    <!-- NEW HIDDEN PRINT AREA FOR DASHBOARD STATISTICS REPORT -->
+    <div id="printable-dashboard-area" class="w-full p-8 font-sans" dir="rtl">
+        <!-- Dynamically Populated -->
+    </div>
+
+    <!-- NEW HIDDEN PRINT AREA FOR SIMPLE PATIENT LISTS (e.g. records missing a national ID) -->
+    <div id="printable-list-area" class="w-full p-8 font-sans" dir="rtl">
+        <!-- Dynamically Populated -->
+    </div>

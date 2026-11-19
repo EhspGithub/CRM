@@ -1,0 +1,90 @@
+    <!-- Dispense Medication Modal (NEW) -->
+    <div id="dispense-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-100 max-h-[92vh] flex flex-col animate-fade-in">
+            <div class="bg-teal-700 p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-pills text-lg"></i>
+                    <h3 class="text-sm font-bold">ثبت فرآیند ارائه دارو به مددجو</h3>
+                </div>
+                <button onclick="closeDispenseModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Patient Mini Summary -->
+            <div class="bg-slate-50 border-b p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold text-slate-700">
+                <div>کد پرونده: <span id="d-m-code" class="text-teal-700">---</span></div>
+                <div>بیمار: <span id="d-m-name" class="text-slate-800">---</span></div>
+                <div>داروی در حال حاضر: <span id="d-m-drug" class="text-indigo-600">---</span></div>
+                <div>دوز روزانه مصوب: <span id="d-m-daily-dosage" class="text-rose-600">---</span></div>
+            </div>
+
+            <form id="dispenseForm" onsubmit="handleDispenseSubmit(event)" class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-5 text-xs">
+                <input type="hidden" id="dispense-patient-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 1. Dispense Date -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">تاریخ ارائه دارو (شمسی) <span class="text-red-500">*</span></label>
+                        <input type="text" id="dispense-date" data-jdp required class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none text-center focus:border-teal-700 font-bold">
+                    </div>
+
+                    <!-- 2. Drug Type -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">نوع دارو ارائه شده</label>
+                        <select id="dispense-drug-display" onchange="handleDispenseDrugChange(); calculateNextDispenseVisit();" class="w-full px-4 py-2 border border-gray-300 bg-white rounded-xl outline-none focus:border-teal-700 font-bold text-slate-700">
+                            <option value="روان درمانی">روان درمانی</option>
+                            <option value="ش متادون">ش متادون</option>
+                            <option value="ق متادون">ق متادون</option>
+                            <option value="بوپرنورفین">بوپرنورفین</option>
+                            <option value="اپیوم">اپیوم</option>
+                            <option value="متقاضی اپیوم">متقاضی اپیوم</option>
+                            <option value="داروی نامعلوم">سایر موارد</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Dispense Quantity -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">میزان کل داروی تحویلی (تعداد قرص / حجم سی‌سی) <span class="text-red-500">*</span></label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <input type="number" id="dispense-quantity" required min="1" step="0.5" oninput="calculateNextDispenseVisit()" class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none focus:border-teal-700 font-bold text-center">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span id="dispense-quantity-unit" class="text-[10px] text-gray-500 font-bold">واحد</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Next Visit Calculation Output -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">تاریخ مراجعه بعدی (محاسبه هوشمند بر اساس دوز) <i class="fa-solid fa-calculator text-teal-600"></i></label>
+                        <div class="relative">
+                            <input type="text" id="dispense-next-visit" readonly class="w-full px-4 py-2 border border-teal-200 bg-teal-50/50 rounded-xl outline-none font-bold text-center text-teal-800" placeholder="در حال محاسبه...">
+                            <div class="absolute inset-y-0 left-3 flex items-center">
+                                <span id="dispense-days-calculated" class="text-[9px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold">۰ روز دیگر</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Recipient Toggle -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-2">فرد تحویل‌گیرنده دارو <span class="text-red-500">*</span></label>
+                        <select id="dispense-recipient" required onchange="handleDispenseRecipientChange()" class="w-full px-4 py-2 border border-gray-300 rounded-xl outline-none focus:border-teal-700 font-bold bg-white">
+                            <option value="خودش">خودش (بیمار معالج)</option>
+                            <option value="همراه">همراه بیمار (بستگان / قیم)</option>
+                        </select>
+                    </div>
+
+                    <!-- 6. Companion Name (Dynamic Field) -->
+                    <div id="dispense-companion-container" class="hidden">
+                        <label class="block font-bold text-slate-700 mb-2">نام و مشخصات همراه تحویل‌گیرنده <span class="text-red-500">*</span></label>
+                        <input type="text" id="dispense-companion-name" class="w-full px-4 py-2 border border-teal-300 rounded-xl outline-none focus:ring-2 focus:ring-teal-700/20 font-bold" placeholder="مثال: مریم کریمی (همسر)">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t flex justify-end gap-2">
+                    <button type="button" onclick="closeDispenseModal()" class="px-4 py-2 border rounded-xl hover:bg-slate-50 font-bold">انصراف</button>
+                    <button type="submit" class="px-5 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl font-bold shadow transition flex items-center gap-1.5"><i class="fa-solid fa-file-signature"></i> تایید و ثبت ارائه دارو</button>
+                </div>
+            </form>
+        </div>
+    </div>

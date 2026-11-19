@@ -1,0 +1,27 @@
+    <!-- Report Print Preview Modal -->
+    <div id="print-preview-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-[60] no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full border border-slate-100 max-h-[92vh] flex flex-col animate-fade-in">
+            <div class="bg-slate-800 p-5 text-white flex justify-between items-center">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    پیش‌نمایش سند چاپی گزارش مراجعین
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="standalonePrintReport()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">
+                        پرینت سیستم / خروجی PDF
+                    </button>
+                    <button onclick="closePrintPreview()" class="text-white/80 hover:text-white">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50 flex-1 custom-scrollbar">
+                <div class="bg-white p-8 rounded-2xl shadow-inner border" id="print-preview-content">
+                    <!-- Cloned dynamic printable report body -->
+                </div>
+            </div>
+            <div class="bg-slate-100 px-6 py-4 flex justify-end border-t border-slate-200">
+                <button onclick="closePrintPreview()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl font-bold">بستن پیش‌نمایش</button>
+            </div>
+        </div>
+    </div>

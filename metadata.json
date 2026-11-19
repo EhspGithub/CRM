@@ -1,6 +1,0 @@
-{
-  "name": "Nasim Rahayi",
-  "description": "سامانه جامع مدیریت مراجعین، پرونده‌های بالینی، توزیع دارو و اپیوم کلینیک نسیم رهایی",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

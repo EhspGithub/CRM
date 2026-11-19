@@ -1,0 +1,416 @@
+            <!-- ================= 6. SETTINGS AND DEFINITIONS TAB ================= -->
+            <section id="tab-settings" class="hidden space-y-6 no-print">
+                <!-- Tab Navigation Menu -->
+                <div class="m-tabstrip flex border-b border-slate-200 bg-white p-2 rounded-2xl shadow-sm gap-2">
+                    <button onclick="switchSettingsSubTab('clinic')" id="btn-settings-sub-clinic" class="px-5 py-2.5 text-xs font-bold border-b-2 border-teal-brand text-teal-brand bg-teal-50/50 transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-hospital text-sm"></i>
+                        <span>اطلاعات پایه کلینیک</span>
+                    </button>
+                    <button onclick="switchSettingsSubTab('staff')" id="btn-settings-sub-staff" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-users-gear text-sm"></i>
+                        <span>مدیریت کادر درمان</span>
+                    </button>
+                    <button onclick="switchSettingsSubTab('data')" id="btn-settings-sub-data" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel text-sm"></i>
+                        <span>ورود و خروج اطلاعات</span>
+                    </button>
+                    <button onclick="switchSettingsSubTab('about')" id="btn-settings-sub-about" class="px-5 py-2.5 text-xs font-bold text-slate-500 border-b-2 border-transparent transition rounded-xl flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-sm"></i>
+                        <span>درباره سامانه</span>
+                    </button>
+                </div>
+
+                <!-- Clinic Profile Sub-Tab Container -->
+                <div id="settings-sub-tab-clinic" class="space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-hospital text-teal-brand"></i>
+                                مشخصات و اطلاعات پایه کلینیک
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">اطلاعات این بخش مستقیماً در هدر اصلی، گزارش‌ها و فایل‌های خروجی اعمال خواهند شد.</p>
+                        </div>
+
+                        <form id="clinicSettingsForm" onsubmit="saveClinicSettings(event)" class="space-y-4 text-xs font-semibold text-slate-700">
+                            <!-- چیدمان یکپارچه ۹ فیلد در ۳ ستون و ۳ ردیف -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-b border-slate-100 pb-4">
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">نام کلینیک <span class="text-red-500">*</span></label>
+                                    <input type="text" id="setting-clinicName" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30" placeholder="مثال: نسیم رهایی">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">عنوان نمایشی سامانه <span class="text-red-500">*</span></label>
+                                    <input type="text" id="setting-displayTitle" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30" placeholder="مثال: سامانه مدیریت کلینیک ترک اعتیاد">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">شهرستان / شهر</label>
+                                    <input type="text" id="setting-city" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">شماره تلفن ثابت</label>
+                                    <input type="text" id="setting-phone" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30 text-left" placeholder="۰۲۱">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">شماره موبایل ارتباطی</label>
+                                    <input type="text" id="setting-mobile" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30 text-left" placeholder="۰۹۱۲">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">آدرس دقیق پستی کلینیک</label>
+                                    <input type="text" id="setting-address" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">مؤسس و مدیر کلینیک</label>
+                                    <input type="text" id="setting-managerName" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30" placeholder="مثال: دکتر احمدی">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">پزشک ارشد کلینیک</label>
+                                    <input type="text" id="setting-chiefDoctorName" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30" placeholder="مثال: دکتر حسن‌پور">
+                                </div>
+                                <div>
+                                    <label class="block mb-1.5 text-slate-600">توضیحات تکمیلی (نمایش در پانویس)</label>
+                                    <input type="text" id="setting-description" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-brand/30" placeholder="قوانین کلینیک یا توضیحات...">
+                                </div>
+                            </div>
+
+                            <div class="pt-2 flex justify-end">
+                                <button type="submit" class="px-6 py-2 bg-teal-brand hover-bg-teal text-white font-bold rounded-xl shadow-md transition">
+                                    ذخیره و همگام‌سازی تنظیمات کلینیک
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Staff Management Sub-Tab Container -->
+                <div id="settings-sub-tab-staff" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-teal-brand"></i>
+                                مدیریت کادر درمان (پزشکان و مشاوران)
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">تعریف اسامی جهت استفاده در فرم‌های پذیرش، ویرایش و لاگ ویزیت‌ها.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Doctors Admin Panel -->
+                            <div class="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200/60">
+                                <span class="text-xs font-black text-slate-700 block border-b pb-1.5"><i class="fa-solid fa-user-doctor text-indigo-500 ml-1"></i> پزشکان کلینیک</span>
+                                <form onsubmit="addStaffMember(event, 'doctors')" class="flex gap-2 text-xs">
+                                    <input type="text" id="input-new-doctor" required class="flex-1 px-3 py-1.5 border rounded-xl outline-none focus:border-teal-brand" placeholder="نام پزشک جدید...">
+                                    <button type="submit" class="px-3 bg-teal-brand text-white rounded-xl hover:bg-teal-700 transition" title="افزودن پزشک"><i class="fa-solid fa-plus"></i></button>
+                                </form>
+                                <div id="settings-doctors-list" class="space-y-1 max-h-52 overflow-y-auto custom-scrollbar text-[11px] font-bold text-slate-800">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                                <button type="button" onclick="toggleArchivedStaff('doctors')" id="settings-doctors-archived-toggle" class="w-full text-[10px] font-bold text-slate-400 hover:text-slate-600 transition text-center pt-1"></button>
+                                <div id="settings-doctors-archived-list" class="hidden space-y-1 max-h-40 overflow-y-auto custom-scrollbar text-[11px] font-bold text-slate-500 border-t border-dashed border-slate-300 pt-2"></div>
+                            </div>
+
+                            <!-- Psychologists Admin Panel -->
+                            <div class="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200/60">
+                                <span class="text-xs font-black text-slate-700 block border-b pb-1.5"><i class="fa-solid fa-brain text-rose-500 ml-1"></i> روانشناسان و مشاوران</span>
+                                <form onsubmit="addStaffMember(event, 'psychologists')" class="flex gap-2 text-xs">
+                                    <input type="text" id="input-new-psychologist" required class="flex-1 px-3 py-1.5 border rounded-xl outline-none focus:border-teal-brand" placeholder="نام روانشناس جدید...">
+                                    <button type="submit" class="px-3 bg-teal-brand text-white rounded-xl hover:bg-teal-700 transition" title="افزودن روانشناس"><i class="fa-solid fa-plus"></i></button>
+                                </form>
+                                <div id="settings-psychologists-list" class="space-y-1 max-h-52 overflow-y-auto custom-scrollbar text-[11px] font-bold text-slate-800">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                                <button type="button" onclick="toggleArchivedStaff('psychologists')" id="settings-psychologists-archived-toggle" class="w-full text-[10px] font-bold text-slate-400 hover:text-slate-600 transition text-center pt-1"></button>
+                                <div id="settings-psychologists-archived-list" class="hidden space-y-1 max-h-40 overflow-y-auto custom-scrollbar text-[11px] font-bold text-slate-500 border-t border-dashed border-slate-300 pt-2"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-[11px] text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-200/60 font-bold leading-relaxed mt-4">
+                            <i class="fa-solid fa-circle-info"></i> توجه داشته باشید که حذف پزشک یا مشاور، آن‌ها را صرفاً از منوی پذیرش‌های بعدی حذف می‌کند و آسیبی به پرونده‌های قبلی نخواهد زد.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Import/Export Sub-Tab Container -->
+                <div id="settings-sub-tab-data" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-file-excel text-teal-brand"></i>
+                                ورود و خروج اطلاعات مراجعین (اکسل / CSV)
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">از این بخش می‌توانید لیست کامل مراجعین را به صورت فایل اکسل دریافت کرده و یا داده‌های قبلی خود را از اکسل وارد سامانه کنید.</p>
+                        </div>
+
+                        <!-- NEW: Danger Zone - Full data wipe (e.g. to clear the sample/dummy dataset before importing real data) -->
+                        <div class="p-4 bg-rose-50 border-2 border-dashed border-rose-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 text-right">
+                                <div class="w-11 h-11 shrink-0 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-rose-700 text-sm">پاکسازی کامل اطلاعات</h4>
+                                    <p class="text-[11px] text-rose-500 mt-0.5">حذف تمام مراجعین، ویزیت‌ها، گزارش‌ها و لاگ‌های موجود (مثلاً برای حذف داده‌های نمونه پیش از ورود اطلاعات واقعی). این عمل غیرقابل بازگشت است.</p>
+                                </div>
+                            </div>
+                            <button onclick="clearAllData()" class="shrink-0 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md transition whitespace-nowrap">
+                                <i class="fa-solid fa-eraser ml-1"></i> حذف کامل و پاکسازی
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Export to JSON (Backup) -->
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-emerald-300 transition group">
+                                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-database"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1">پشتیبان‌گیری (بکاپ)</h4>
+                                    <p class="text-[11px] text-slate-500 mb-2">دانلود کامل دیتابیس (JSON)</p>
+                                </div>
+                                <button onclick="exportDatabase()" class="mt-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition w-full">
+                                    دریافت فایل پشتیبان
+                                </button>
+                            </div>
+
+                            <!-- Import from JSON (Restore) -->
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-rose-300 transition group">
+                                <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-server"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1">بازیابی / ادغام دیتابیس</h4>
+                                    <p class="text-[11px] text-slate-500 mb-2">بارگذاری بکاپ با قابلیت ادغام هوشمند یا جایگزینی کامل</p>
+                                </div>
+                                <div class="relative w-full mt-auto">
+                                    <input type="file" id="import-json-file-settings" accept=".json" onchange="handleBackupFileSelected(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    <div class="w-full px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md transition pointer-events-none flex items-center justify-center gap-2">
+                                        <span>انتخاب و بازیابی</span>
+                                        <i class="fa-solid fa-upload"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Export to CSV -->
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-teal-300 transition group">
+                                <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-file-export"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1">خروجی اکسل مراجعین</h4>
+                                    <p class="text-[11px] text-slate-500 mb-2">لیست پرونده‌ها با فرمت CSV</p>
+                                </div>
+                                <button onclick="openExcelExportModal()" class="mt-auto px-4 py-2 bg-teal-brand hover-bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition w-full">
+                                    دانلود فایل اکسل
+                                </button>
+                            </div>
+
+                            <!-- Import from CSV -->
+                            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center space-y-4 hover:border-indigo-300 transition group">
+                                <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fa-solid fa-file-import"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1">ورود مراجعین از اکسل</h4>
+                                    <p class="text-[11px] text-slate-500 mb-2">بارگذاری مراجعین از فایل CSV</p>
+                                </div>
+                                <div class="relative w-full mt-auto">
+                                    <input type="file" id="import-csv-file-settings" accept=".csv" onchange="importCSV(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                    <div class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition pointer-events-none flex items-center justify-center gap-2">
+                                        <span>انتخاب و بارگذاری</span>
+                                        <i class="fa-solid fa-upload"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Automatic File-System Sync — writes a live copy of the database to a
+                             file on disk after every change, with no save dialog and no need to click
+                             the backup button. Requires Chrome/Edge (File System Access API). -->
+
+                        <div id="autosync-card" class="mt-6 p-5 bg-emerald-50 border-2 border-dashed border-emerald-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 text-right">
+                                <div class="w-11 h-11 shrink-0 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-emerald-800 text-sm flex items-center gap-2">
+                                        همگام‌سازی خودکار با فایل روی سیستم
+                                        <span class="text-[10px] font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">پیشنهادی</span>
+                                    </h4>
+                                    <p class="text-[11px] text-emerald-700 mt-0.5 max-w-md">
+                                        با فعال‌سازی، پس از انتخاب یک پوشه، سامانه بعد از هر تغییر (و همچنین هر ۵ دقیقه) به‌طور خودکار و بی‌صدا یک نسخه از دیتابیس را در همان پوشه ذخیره می‌کند — دیگر نیازی به کلیک دستی روی «پشتیبان‌گیری» نیست.
+                                    </p>
+                                    <p id="autosync-status-text" class="text-[11px] font-bold text-slate-400 mt-1.5">در حال بررسی وضعیت...</p>
+                                    <button id="btn-autosync-reactivate" onclick="reactivateAutoSync()" class="hidden mt-1.5 px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded-lg transition">
+                                        <i class="fa-solid fa-rotate-right ml-1"></i>فعال‌سازی مجدد
+                                    </button>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <input type="checkbox" id="autosync-toggle" onchange="toggleAutoSync(this)" class="sr-only peer">
+                                <div class="w-12 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:bg-emerald-500 transition-colors"></div>
+                                <div class="absolute right-1 top-1 bg-white w-4 h-4 rounded-full shadow transition-transform peer-checked:-translate-x-6"></div>
+                            </label>
+                        </div>
+
+                        <!-- NEW: Backup and Restore History Log -->
+                        <div class="mt-8 bg-slate-800 rounded-2xl p-6 shadow-inner relative overflow-hidden">
+                            <div class="absolute -right-6 -bottom-6 opacity-10 text-slate-500 text-9xl pointer-events-none">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                            <div class="relative z-10 flex flex-col h-full">
+                                <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+                                    <h4 class="text-sm font-extrabold text-teal-400 flex items-center gap-2">
+                                        <i class="fa-solid fa-history"></i>
+                                        تاریخچه پشتیبان‌گیری و بازیابی پایگاه داده
+                                    </h4>
+                                    <button onclick="clearBackupHistory()" class="text-xs text-slate-400 hover:text-rose-400 transition font-bold px-2 py-1 bg-slate-700/50 hover:bg-slate-700 rounded-lg">
+                                        <i class="fa-solid fa-eraser ml-1"></i>پاکسازی تاریخچه
+                                    </button>
+                                </div>
+                                
+                                <div id="backup-history-list" class="space-y-2.5 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                                    <!-- Populated dynamically via JS -->
+                                    <div class="text-center text-xs text-slate-500 py-4 italic font-bold border border-dashed border-slate-700 rounded-xl">
+                                        در حال بارگذاری تاریخچه...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide for CSV Import -->
+                        <div class="mt-6 bg-blue-50/50 border border-blue-100 rounded-2xl p-6">
+                            <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                                راهنمای ساختار فایل اکسل (CSV) برای ورود اطلاعات
+                            </h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
+                                برای ورود موفق اطلاعات، فایل شما باید با فرمت <strong>CSV (Comma delimited)</strong> ذخیره شده باشد. سیستم <strong>ردیف اول را به عنوان تیتر (Header) در نظر گرفته و نادیده می‌گیرد</strong>. از ردیف دوم به بعد، اطلاعات باید دقیقاً با ترتیب زیر در ۶ ستون اول قرار گیرند:
+                            </p>
+                            
+                            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                                <table class="w-full text-right border-collapse bg-white text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                                            <th class="p-3 border-l border-slate-200">شماره ستون</th>
+                                            <th class="p-3 border-l border-slate-200">عنوان ستون</th>
+                                            <th class="p-3 border-l border-slate-200">فرمت / مثال</th>
+                                            <th class="p-3">وضعیت</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 font-medium">
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 1 (A)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">کد پرونده</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">1001</td><td class="p-3">الزامی (باید عدد یکتا باشد)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 2 (B)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">نام و نام خانوادگی</td><td class="p-3 border-l border-slate-100">علی محمدی</td><td class="p-3">الزامی</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 3 (C)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">کد ملی</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">0123456789</td><td class="p-3">الزامی (ترجیحاً ۱۰ رقم)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 4 (D)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">تاریخ تولد</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">1365/04/12</td><td class="p-3">الزامی (تاریخ شمسی)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 5 (E)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">شماره تماس</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">09120000000</td><td class="p-3">الزامی</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 6 (F)</td><td class="p-3 font-bold text-teal-700 border-l border-slate-100">تاریخ پذیرش</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">1403/01/01</td><td class="p-3">اختیاری (در صورت خالی بودن تاریخ امروز ثبت می‌شود)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 7 (G)</td><td class="p-3 font-bold text-indigo-600 border-l border-slate-100">درمان بدو ورود</td><td class="p-3 border-l border-slate-100">ش متادون / روان درمانی</td><td class="p-3">اختیاری (پیش‌فرض: روان درمانی)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 8 (H)</td><td class="p-3 font-bold text-indigo-600 border-l border-slate-100">درمان فعلی</td><td class="p-3 border-l border-slate-100">ش متادون / بوپرنورفین</td><td class="p-3">اختیاری (پیش‌فرض: برابر با درمان بدو ورود)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 9 (I)</td><td class="p-3 font-bold text-indigo-600 border-l border-slate-100">دوز فعلی</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">40</td><td class="p-3">اختیاری (پیش‌فرض: 0)</td></tr>
+                                        <tr class="hover:bg-slate-50"><td class="p-3 border-l border-slate-100">ستون 10 (J)</td><td class="p-3 font-bold text-indigo-600 border-l border-slate-100">جنسیت</td><td class="p-3 font-mono text-[11px] border-l border-slate-100">مرد / زن</td><td class="p-3">اختیاری (پیش‌فرض: مرد)</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-bold leading-relaxed shadow-sm">
+                                <i class="fa-solid fa-lightbulb text-amber-500 text-sm ml-1 align-middle"></i>
+                                <strong>ترفند طلایی:</strong> مطمئن‌ترین راه این است که ابتدا یک بار روی دکمه <strong>«خروجی اکسل مراجعین»</strong> کلیک کنید تا یک فایل نمونه با تیترهای استاندارد دریافت کنید. سپس فایل دانلود شده را در نرم‌افزار Excel باز کرده، اطلاعات بیماران جدید را در آن قرار دهید (یا جایگزین اطلاعات قبلی کنید) و پس از ذخیره مجدد، آن را وارد سیستم کنید. سیستم به صورت خودکار مقادیر فراتر از ستون ششم را با مقادیر پیش‌فرض بالینی تنظیم خواهد کرد.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- About System Sub-Tab Container -->
+                <div id="settings-sub-tab-about" class="hidden space-y-6">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-8">
+                        
+                        <div class="text-center space-y-3">
+                            <div class="w-16 h-16 bg-teal-brand/10 text-teal-brand rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-inner">
+                                <i class="fa-solid fa-laptop-medical"></i>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-800">سامانه هوشمند Clinical CRM نسیم رهایی</h3>
+                            <p class="text-sm font-semibold text-slate-500 leading-relaxed max-w-2xl mx-auto">
+                                این سامانه اکنون به یک نرم‌افزار جامع، قدرتمند و کاملاً حرفه‌ای برای مدیریت کلینیک‌های ترک اعتیاد تبدیل شده است و با بررسی‌های انجام شده، <strong>کاملاً آماده استفاده و بهره‌برداری در محیط واقعی کلینیک</strong> می‌باشد.
+                            </p>
+                        </div>
+
+                        <!-- 1. Key Features Grid -->
+                        <div>
+                            <h4 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-2 border-b pb-2">
+                                <i class="fa-solid fa-rocket text-indigo-500 text-lg"></i>
+                                قدرت‌ها و امکانات کلیدی سامانه
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-database"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۱. پایگاه داده نامحدود</h5>
+                                    <p class="text-slate-600 leading-relaxed">ذخیره همه پرونده‌ها و سوابق در پایگاه داده IndexedDB مرورگر (روی همین دستگاه) با تراکنش‌های امن؛ هزاران پرونده بدون افت سرعت.</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-shield-halved"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۲. امنیت مطلق آفلاین</h5>
+                                    <p class="text-slate-600 leading-relaxed">حفظ حریم خصوصی بیماران. تمام داده‌ها فقط روی سیستم شما ذخیره شده و هیچ داده‌ای به اینترنت ارسال نمی‌گردد.</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-microchip"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۳. اتوماسیون هوشمند</h5>
+                                    <p class="text-slate-600 leading-relaxed">محاسبه خودکار تاریخ مراجعه دارویی و تحلیل زنده آمار بیماران با نمودارهای حرفه‌ای داشبورد.</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-teal-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-file-invoice"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۴. گزارش‌ساز پویا</h5>
+                                    <p class="text-slate-600 leading-relaxed">فیلترهای ترکیبی پیشرفته و امکان دریافت خروجی‌های چاپی و PDF کاملاً استاندارد و رسمی.</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-amber-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۵. حسابرسی دقیق (Audit)</h5>
+                                    <p class="text-slate-600 leading-relaxed">ثبت ثانیه‌ای تمام تغییرات و ویرایش‌های روی پرونده‌ها با نام کاربری و تاریخچه کامل.</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 hover:border-rose-300 hover:shadow-sm transition">
+                                    <span class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-file-excel"></i></span>
+                                    <h5 class="font-bold text-slate-800 mb-1.5 text-[13px]">۶. انتقال آسان اطلاعات</h5>
+                                    <p class="text-slate-600 leading-relaxed">ورود دسته‌جمعی مراجعین قدیمی از طریق فایل اکسل (CSV) و خروجی کامل و ایمن پایگاه داده.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                            <!-- 2. Performance Checks -->
+                            <div class="bg-slate-800 text-white rounded-2xl p-6 shadow-md flex flex-col justify-center">
+                                <h4 class="text-sm font-extrabold mb-4 flex items-center gap-2 border-b border-slate-700 pb-3 text-teal-400">
+                                    <i class="fa-solid fa-check-double text-xl"></i>
+                                    موارد بررسی شده فنی
+                                </h4>
+                                <ul class="text-xs space-y-4 font-semibold text-slate-300 leading-relaxed list-disc list-inside">
+                                    <li><strong class="text-white">سرعت و پرفورمنس:</strong> اعمال صفحه‌بندی (Pagination) و تاخیر هوشمند (Debounce) در جستجو جهت جلوگیری از هنگ کردن با هزاران رکورد.</li>
+                                    <li><strong class="text-white">اعتبارسنجی دقیق:</strong> جلوگیری از ثبت کدملی نامعتبر یا کدهای تکراری برای حفظ یکپارچگی اطلاعات.</li>
+                                    <li><strong class="text-white">رابط کاربری (UI) روان:</strong> رفع تداخل مودال‌ها و قفل هوشمند اسکرول برای تجربه کاربری حرفه‌ای و بدون باگ.</li>
+                                </ul>
+                            </div>
+
+                            <!-- 3. Important Warning & Solution -->
+                            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 relative overflow-hidden flex flex-col justify-center">
+                                <div class="absolute -left-6 -top-6 opacity-10 text-amber-500 text-9xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div class="relative z-10">
+                                    <h4 class="text-sm font-black text-amber-900 mb-3 flex items-center gap-2">
+                                        <i class="fa-regular fa-lightbulb text-xl text-amber-600"></i>
+                                        نکته بسیار مهم برای استفاده در کلینیک
+                                    </h4>
+                                    <p class="text-xs text-amber-800 font-bold leading-relaxed mb-4 text-justify">
+                                        اطلاعات فقط روی همین دستگاه و در پایگاه داده IndexedDB مرورگر ذخیره می‌شود و به اینترنت ارسال نمی‌شود. <strong class="text-rose-600 bg-white/50 px-1 rounded">اگر داده‌های مرورگر پاک شود، ویندوز را عوض کنید یا دستگاه خراب شود، بدون فایل پشتیبان اطلاعات قابل بازگشت نیست.</strong>
+                                    </p>
+                                    <div class="bg-white/80 rounded-xl p-3.5 border border-amber-200 flex items-start gap-3 shadow-sm">
+                                        <div class="mt-0.5 bg-emerald-100 text-emerald-600 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-[10px]"></i></div>
+                                        <div class="text-[11px] font-semibold text-emerald-900 leading-relaxed text-justify">
+                                            <strong class="text-emerald-700 block mb-1">راه‌حل هوشمند و قطعی:</strong>
+                                            هر هفته (و بعد از تغییرات مهم) با دکمه <strong>«پشتیبان‌گیری»</strong> یک فایل بکاپ روی فلش یا جای امن دیگری ذخیره کنید؛ با فعال‌سازی «همگام‌سازی خودکار» در تنظیمات (Chrome/Edge) این کار خودکار هم انجام می‌شود. همین فایل با «بازیابی بکاپ» روی هر دستگاه دیگری قابل بازیابی است.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>

@@ -1,0 +1,42 @@
+    <!-- Detailed View Modal -->
+    <div id="details-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden border border-slate-100 max-h-[95vh] flex flex-col animate-fade-in">
+            <div class="shrink-0 bg-teal-brand p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-folder-open text-xl"></i>
+                    <div>
+                        <h3 class="text-sm font-bold" id="details-modal-title">پرونده پزشکی بیمار</h3>
+                        <p class="text-[10px] text-teal-100">سوابق طولی، اطلاعات پایه و سوابق تماس مراجع</p>
+                    </div>
+                </div>
+                <button onclick="closeDetailsModal()" class="text-white/80 hover:text-white text-lg">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Tabs Menu: shrink-0 keeps this row's own height fixed so it can never be
+                 squeezed by a tall body (was the likely cause of the tab labels getting
+                 visually clipped/overlapping the header when the body content was long). -->
+            <div class="shrink-0 flex border-b border-slate-200 bg-slate-50 px-6 pt-2 overflow-x-auto custom-scrollbar">
+                <button id="modal-tab-btn-base" onclick="switchModalTab('base')" class="px-4 py-2 text-xs font-bold border-b-2 border-teal-brand text-teal-brand transition whitespace-nowrap">اطلاعات پایه</button>
+                <button id="modal-tab-btn-visits" onclick="switchModalTab('visits')" class="px-4 py-2 text-xs font-bold text-slate-500 border-b-2 border-transparent transition whitespace-nowrap">سوابق ویزیت و درمان</button>
+                <button id="modal-tab-btn-dispense" onclick="switchModalTab('dispense')" class="px-4 py-2 text-xs font-bold text-slate-500 border-b-2 border-transparent transition whitespace-nowrap text-teal-600 hover:text-teal-700"><i class="fa-solid fa-pills ml-1"></i>تاریخچه دارو</button>
+                <button id="modal-tab-btn-calls" onclick="switchModalTab('calls')" class="px-4 py-2 text-xs font-bold text-slate-500 border-b-2 border-transparent transition whitespace-nowrap">تاریخچه تماس‌ها</button>
+                <button id="modal-tab-btn-history" onclick="switchModalTab('history')" class="px-4 py-2 text-xs font-bold text-slate-500 border-b-2 border-transparent transition whitespace-nowrap">تغییرات پرونده</button>
+                <button id="modal-tab-btn-reviews" onclick="switchModalTab('reviews')" class="px-4 py-2 text-xs font-bold text-slate-500 border-b-2 border-transparent transition whitespace-nowrap"><i class="fa-solid fa-clipboard-check ml-1"></i>بررسی پرونده</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 min-h-0 custom-scrollbar space-y-6 text-sm" id="details-modal-body">
+                <!-- Filled via JS based on selected tab -->
+            </div>
+
+            <div class="details-modal-footer shrink-0 bg-slate-100 px-6 py-4 flex justify-between border-t border-slate-200 flex-wrap gap-2">
+                <button onclick="closeDetailsModal()" class="px-5 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-900 transition">بستن پنجره پرونده</button>
+                <div class="flex gap-2 flex-wrap">
+                    <button id="btn-modal-action-print" class="px-4 py-2 bg-slate-600 text-white text-xs font-bold rounded-xl hover:bg-slate-700 transition flex items-center gap-1.5"><i class="fa-solid fa-print"></i> چاپ پرونده</button>
+                    <button id="btn-modal-action-inline-edit" onclick="toggleModalInlineEdit(true)" class="px-4 py-2 bg-teal-brand text-white text-xs font-bold rounded-xl hover:bg-teal-700 transition"><i class="fa-solid fa-user-pen ml-1"></i>ویرایش سریع اطلاعات</button>
+                    <button id="btn-modal-action-edit" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition">ویرایش کامل پرونده</button>
+                </div>
+            </div>
+        </div>
+    </div>

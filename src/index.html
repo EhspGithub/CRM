@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#111d2c">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <title>سامانه مدیریت کلینیک ترک اعتیاد نسیم رهایی</title>
+    <!-- Libraries (local copies in vendor/, see scripts/vendor.sh): Tailwind, Chart.js, Font Awesome, Vazirmatn, Jalali date picker -->
+    <link rel="stylesheet" href="vendor/vazirmatn/Vazirmatn-font-face.css">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="vendor/jalalidatepicker/jalalidatepicker.min.css">
+    <script src="vendor/tailwindcss/tailwindcss.js"></script>
+    <script src="vendor/chartjs/chart.umd.js"></script>
+    <script src="vendor/jalalidatepicker/jalalidatepicker.min.js"></script>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+
+
+    <!-- @include partials/layout/splash.html -->
+
+
+    <!-- @include partials/layout/header.html -->
+
+    <div class="flex-1 flex overflow-hidden no-print">
+        
+        <!-- @include partials/layout/sidebar.html -->
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-3 md:p-6 bg-slate-100 custom-scrollbar app-main">
+
+            <!-- @include partials/pages/dashboard.html -->
+
+            <!-- @include partials/pages/add-patient.html -->
+
+            <!-- @include partials/pages/patients-list.html -->
+
+            <!-- @include partials/pages/follow-ups.html -->
+
+            <!-- @include partials/pages/dispense.html -->
+
+            <!-- @include partials/pages/opium.html -->
+
+            <!-- @include partials/pages/reports.html -->
+
+            <!-- @include partials/pages/settings.html -->
+
+        </main>
+    </div>
+
+    <!-- @include partials/layout/mobile-nav.html -->
+
+    <!-- ================= MODALS AND POPUPS ================= -->
+
+    <!-- @include partials/modals/patient-details.html -->
+
+    <!-- @include partials/modals/deactivate-patient.html -->
+
+    <!-- @include partials/modals/system-not-registered.html -->
+
+    <!-- @include partials/modals/excel-export.html -->
+
+    <!-- @include partials/modals/no-national-id.html -->
+
+    <!-- @include partials/modals/random-sample.html -->
+
+    <!-- @include partials/modals/print-sections.html -->
+
+    <!-- @include partials/modals/visit.html -->
+
+    <!-- @include partials/modals/dispense.html -->
+
+    <!-- @include partials/modals/opium-delivery.html -->
+
+    <!-- @include partials/modals/opium-add-patients.html -->
+
+    <!-- @include partials/modals/opium-periods.html -->
+
+    <!-- @include partials/modals/opium-print-columns.html -->
+
+    <!-- @include partials/modals/print-preview.html -->
+
+
+    <!-- @include partials/print/print-areas.html -->
+
+    <!-- @include partials/components/dialogs.html -->
+
+    <!-- @include partials/modals/merge-mode.html -->
+
+    <!-- @include partials/modals/merge-review.html -->
+
+    <!-- @include partials/components/toast.html -->
+
+
+
+<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/opium-report.css">
+
+<script src="js/data/indexeddb-store.js"></script>
+<script src="js/data/seed-data.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/data/database.js"></script>
+<script src="js/core/backup-status-audit.js"></script>
+<script src="js/core/navigation.js"></script>
+<script src="js/features/dashboard.js"></script>
+<script src="js/features/patients.js"></script>
+<script src="js/features/dispense-patient-file.js"></script>
+<script src="js/features/calls-visits.js"></script>
+<script src="js/features/reports.js"></script>
+<script src="js/features/settings.js"></script>
+<script src="js/features/print.js"></script>
+<script src="js/features/backup/import-export.js"></script>
+<script src="js/features/backup/merge.js"></script>
+<script src="js/features/opium.js"></script>
+<script src="js/ui/mobile.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

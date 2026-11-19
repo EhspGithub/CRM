@@ -1,0 +1,306 @@
+            <!-- ================= 2. REGISTER / INTAKE TAB ================= -->
+            <section id="tab-add-patient" class="hidden no-print">
+                <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden">
+                    <div class="bg-teal-brand p-6 text-white flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-address-card"></i>
+                                فرم پذیرش مددجو
+                            </h2>
+                            <p class="text-xs text-teal-100 mt-1">سامانه نسیم رهایی - تحت مدیریت بالینی دکتر حسن‌پور</p>
+                        </div>
+                        <span class="text-xs bg-white/20 px-3 py-1.5 rounded-full font-bold">بخش پذیرش</span>
+                    </div>
+
+                    <form id="patientForm" onsubmit="handleFormSubmit(event)" class="p-8 space-y-6">
+                        <input type="hidden" id="form-edit-id">
+
+                        <!-- Demographics Panel -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black text-teal-brand uppercase tracking-wider border-r-4 border-teal-brand pr-3 flex items-center gap-2">۲.۱ - اطلاعات هویتی و پرسنلی <span id="p-code-last-hint" class="text-[10px] text-slate-400 font-normal normal-case tracking-normal"></span></h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">کد پرونده <span class="text-red-500">*</span></label>
+                                    <input type="number" id="p-code" required oninput="validateCodeField(this)" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="شماره عددی یکتای پرونده">
+                                    <span id="p-code-dup-err" class="text-[10px] text-red-500 hidden mt-1 block font-bold">این کد پرونده تکراری است!</span>
+                                </div>
+                                <div class="col-span-1 lg:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">نام و نام خانوادگی <span class="text-red-500">*</span></label>
+                                    <input type="text" id="p-fullName" required class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="نام و نام خانوادگی بیمار">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">کد ملی ده رقمی <span class="text-slate-400 font-normal">(اختیاری)</span></label>
+                                    <input type="text" id="p-nationalId" maxlength="10" oninput="validateNationalIdField(this)" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="مثال: 0012345678">
+                                    <span id="national-id-err" class="text-[10px] text-red-500 hidden mt-1 block font-bold">کد ملی وارد شده معتبر نیست.</span>
+                                    <span id="national-id-dup-err" class="text-[10px] text-red-500 hidden mt-1 block font-bold">کد ملی تکراری است و به قسمت مدیریت مراجعین مراجعه کنید</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">تاریخ تولد شمسی <span class="text-red-500">*</span></label>
+                                    <input type="text" id="p-birthdate" data-jdp required class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none text-center" placeholder="روز/ماه/سال">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">سن (محاسبه خودکار) <span class="text-red-500">*</span></label>
+                                    <input type="number" id="p-age" required min="12" max="100" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="محاسبه خودکار یا دستی">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">جنسیت مراجع <span class="text-red-500">*</span></label>
+                                    <div class="flex items-center space-x-6 space-x-reverse py-1.5">
+                                        <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                            <input type="radio" name="p-gender" value="مرد" checked class="w-4 h-4 text-teal-brand">
+                                            <span class="text-xs text-slate-700">مرد</span>
+                                        </label>
+                                        <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                            <input type="radio" name="p-gender" value="زن" class="w-4 h-4 text-teal-brand">
+                                            <span class="text-xs text-slate-700">زن</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">وضعیت تاهل</label>
+                                    <select id="p-marital" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="مجرد">مجرد</option>
+                                        <option value="متأهل">متأهل</option>
+                                        <option value="مطلقه - متارکه">مطلقه - متارکه</option>
+                                        <option value="همسر فوت شده">همسر فوت شده</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">وضعیت اشتغال</label>
+                                    <select id="p-employment" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="شاغل">شاغل</option>
+                                        <option value="بیکار">بیکار</option>
+                                        <option value="بازنشسته">بازنشسته</option>
+                                        <option value="دانش‌آموز/دانشجو">دانش‌آموز/دانشجو</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">عنوان شغل</label>
+                                    <input type="text" id="p-job" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="عنوان فعالیت کاری">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">شماره تماس مراجع <span class="text-red-500">*</span></label>
+                                    <input type="tel" id="p-phone" required class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none text-left" placeholder="09123456789">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">تاریخ پذیرش در مرکز <span class="text-red-500">*</span></label>
+                                    <input type="text" id="p-admissionDate" data-jdp required class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none text-center" placeholder="روز/ماه/سال">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">وضعیت بیمه مراجع</label>
+                                    <select id="p-insurance" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="دارد">دارد (بیمه فعال)</option>
+                                        <option value="ندارد">ندارد (آزاد)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">ثبت در سامانه</label>
+                                    <select id="p-systemRegistered" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="بله">بله</option>
+                                        <option value="خیر">خیر</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">مشاور (روانشناس) <span class="text-red-500">*</span></label>
+                                    <select id="p-counselor" required class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="" disabled selected>لطفاً مشاور را انتخاب کنید</option>
+                                        <!-- Will be filled dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2.2: Substance usage -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black text-teal-brand uppercase tracking-wider border-r-4 border-teal-brand pr-3">۲.۲ - اطلاعات مربوط به مصرف مواد</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">نوع ماده مصرفی اصلی <span class="text-red-500">*</span></label>
+                                    <select id="p-substance" required onchange="toggleSubstanceOtherField()" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="تریاک">تریاک</option>
+                                        <option value="شیره">شیره</option>
+                                        <option value="هروئین">هروئین</option>
+                                        <option value="کراک">کراک</option>
+                                        <option value="شیشه (مت‌آمفتامین)">شیشه (مت‌آمفتامین)</option>
+                                        <option value="ترامادول">ترامادول</option>
+                                        <option value="ماریجوانا / گل">ماریجوانا / گل</option>
+                                        <option value="حشیش">حشیش</option>
+                                        <option value="الکل">الکل</option>
+                                        <option value="کوکائین">کوکائین</option>
+                                        <option value="اکستازی">اکستازی</option>
+                                        <option value="سایر مواد روانگردان">سایر مواد روانگردان</option>
+                                        <option value="مصرف چندگانه (پلی‌سابستنس)">مصرف چندگانه (پلی‌سابستنس)</option>
+                                    </select>
+                                </div>
+                                <div id="other-substance-container" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">توضیح سایر مواد مصرفی <span class="text-red-500">*</span></label>
+                                    <input type="text" id="p-substanceOther" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="نام ماده مصرفی">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">سن شروع مصرف (سال)</label>
+                                    <input type="number" id="p-startAge" min="5" max="90" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="مثال: ۲۵">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">مدت مصرف مراجع (سال)</label>
+                                    <input type="number" id="p-duration" min="0" max="70" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="مثال: ۱۰">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">سوابق ترک قبلی مراجع</label>
+                                    <select id="p-attempts" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="هیچ‌وقت ترک نکرده">هیچ‌وقت ترک نکرده</option>
+                                        <option value="۱ بار">۱ بار</option>
+                                        <option value="۲ تا ۵ بار">۲ تا ۵ بار</option>
+                                        <option value="بیش از ۵ بار">بیش از ۵ بار</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- سابقه اقامت در کمپ (ویرایشگر در js/features/patients.js ساخته می‌شود) -->
+                            <div id="p-camp-mount"></div>
+                        </div>
+
+                        <!-- Section 2.3: Medical & Psychiatric History (Multi-Select Groups) -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black text-teal-brand uppercase tracking-wider border-r-4 border-teal-brand pr-3">۲.۳ - سابقه پزشکی و روانپزشکی (انتخاب چندگانه)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <!-- Category 1 -->
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs font-bold text-slate-800 block border-b pb-2 mb-3"><i class="fa-solid fa-stethoscope text-teal-brand ml-1"></i>  بیماری‌های داخلی</span>
+                                    <div class="space-y-2 text-xs">
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="بیماری کبدی" class="rounded text-teal-brand"> <span class="text-[11px]">بیماری کبدی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="بیماری کلیوی" class="rounded text-teal-brand"> <span class="text-[11px]">بیماری کلیوی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="بیماری گوارشی" class="rounded text-teal-brand"> <span class="text-[11px]">بیماری گوارشی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="دیابت" class="rounded text-teal-brand"> <span class="text-[11px]">دیابت</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="فشار خون" class="rounded text-teal-brand"> <span class="text-[11px]">فشار خون</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="بیماری‌های ریوی" class="rounded text-teal-brand"> <span class="text-[11px]">بیماری‌های ریوی</span></label>
+                                    </div>
+                                </div>
+                                <!-- Category 2 -->
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs font-bold text-slate-800 block border-b pb-2 mb-3"><i class="fa-solid fa-heart-pulse text-rose-500 ml-1"></i> قلب و عروق</span>
+                                    <div class="space-y-2 text-xs">
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="بیماری ایسکمیک قلب" class="rounded text-teal-brand"> <span class="text-[11px]">بیماری ایسکمیک قلب</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="نارسایی قلبی" class="rounded text-teal-brand"> <span class="text-[11px]">نارسایی قلبی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="آریتمی" class="rounded text-teal-brand"> <span class="text-[11px]">آریتمی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="سایر بیماری‌های قلبی" class="rounded text-teal-brand"> <span class="text-[11px]">سایر بیماری‌های قلبی</span></label>
+                                    </div>
+                                </div>
+                                <!-- Category 3 -->
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs font-bold text-slate-800 block border-b pb-2 mb-3"><i class="fa-solid fa-brain text-blue-500 ml-1"></i> مغز و اعصاب</span>
+                                    <div class="space-y-2 text-xs">
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="صرع" class="rounded text-teal-brand"> <span class="text-[11px]">صرع</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="سکته مغزی" class="rounded text-teal-brand"> <span class="text-[11px]">سکته مغزی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="پارکینسون" class="rounded text-teal-brand"> <span class="text-[11px]">پارکینسون</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="ام اس" class="rounded text-teal-brand"> <span class="text-[11px]">ام اس</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="سایر بیماری‌های نورولوژیک" class="rounded text-teal-brand"> <span class="text-[11px]">سایر موارد نورولوژیک</span></label>
+                                    </div>
+                                </div>
+                                <!-- Category 4 -->
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs font-bold text-slate-800 block border-b pb-2 mb-3"><i class="fa-solid fa-shield-virus text-indigo-500 ml-1"></i> عفونی و روانپزشکی</span>
+                                    <div class="space-y-2 text-xs">
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="هپاتیت B" class="rounded text-teal-brand"> <span class="text-[11px]">هپاتیت B</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="هپاتیت C" class="rounded text-teal-brand"> <span class="text-[11px]">هپاتیت C</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="HIV" class="rounded text-teal-brand"> <span class="text-[11px]">HIV / ایدز</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="افسردگی" class="rounded text-teal-brand"> <span class="text-indigo-600 font-bold text-[11px]">افسردگی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="اختلال اضطرابی" class="rounded text-teal-brand"> <span class="text-indigo-600 font-bold text-[11px]">اختلال اضطرابی</span></label>
+                                        <label class="flex items-center space-x-1.5 space-x-reverse"><input type="checkbox" name="p-med" value="اختلال دوقطبی" class="rounded text-teal-brand"> <span class="text-indigo-600 font-bold text-[11px]">دوقطبی / روان‌پزشکی</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">توضیحات تکمیلی بالینی و روانپزشکی</label>
+                                <textarea id="p-medicalNotes" rows="2" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="سابقه بستری‌های قبلی، تمایل به خودکشی، مشکلات خانوادگی، نام داروهای خاص مصرفی..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Section 2.4: Current Treatment Plan -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black text-teal-brand uppercase tracking-wider border-r-4 border-teal-brand pr-3">۲.۴ - برنامه درمانی اولیه</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">پروتکل درمانی <span class="text-red-500">*</span></label>
+                                    <select id="p-drug" required onchange="handleDrugDosageUnits('p-drug', 'p-dosage-container', 'p-dosage-unit'); togglePriorityField('p-drug', 'p-priority-container')" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="روان درمانی">روان درمانی</option>
+                                        <option value="ش متادون">ش متادون</option>
+                                        <option value="ق متادون">ق متادون</option>
+                                        <option value="بوپرنورفین">بوپرنورفین</option>
+                                        <option value="اپیوم">اپیوم</option>
+                                        <option value="متقاضی اپیوم">متقاضی اپیوم</option>
+                                    </select>
+                                </div>
+                                <div id="p-dosage-container" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">دوز تجویزی <span class="text-red-500">*</span></label>
+                                    <div class="relative rounded-xl shadow-sm">
+                                        <input type="number" id="p-dosage" step="0.1" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span id="p-dosage-unit" class="text-[10px] text-gray-500 font-bold">واحد</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- NEW: Opium priority field — shown only when اپیوم is selected -->
+                                <div id="p-priority-container" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">اولویت اپیوم</label>
+                                    <select id="p-priority" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="A1">A1</option>
+                                        <option value="A2">A2</option>
+                                        <option value="B1">B1</option>
+                                        <option value="B2">B2</option>
+                                        <option value="B3">B3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Controls on Registration -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black text-teal-brand uppercase tracking-wider border-r-4 border-teal-brand pr-3">۲.۵ - وضعیت بدو ورود</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">نوع حضور <span class="text-red-500">*</span></label>
+                                    <select id="p-status" required onchange="toggleDeactiveReasonField()" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="فعال">فعال</option>
+                                        <option value="غیرفعال">غیرفعال</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Mandatory Cause of Inactivity and Optional description within full Form -->
+                                <div id="deactive-reason-container" class="hidden col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">علت غیرفعال شدن پرونده <span class="text-red-500">*</span></label>
+                                        <select id="p-deactiveReason" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                            <option value="" disabled selected>لطفاً علت را انتخاب کنید</option>
+                                            <option value="بهبودی کامل (ترخیص)">بهبودی کامل (ترخیص)</option>
+                                            <option value="انصراف از درمان">انصراف از درمان</option>
+                                            <option value="انتقال به مرکز دیگر">انتقال به مرکز دیگر</option>
+                                            <option value="فوت">فوت</option>
+                                            <option value="عدم مراجعه طولانی مدت">عدم مراجعه طولانی مدت</option>
+                                            <option value="مشکلات مالی">مشکلات مالی</option>
+                                            <option value="علت نامشخص">علت نامشخص</option>
+                                            <option value="سایر">سایر</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">توضیحات بیشتر (اختیاری)</label>
+                                        <input type="text" id="p-deactiveNotes" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none" placeholder="توضیحات اضافی...">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">وضعیت مراجعه حضوری</label>
+                                    <select id="p-attendance" class="w-full px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-brand/30 outline-none bg-white">
+                                        <option value="منظم">منظم</option>
+                                        <option value="نامنظم">نامنظم</option>
+                                        <option value="غیبت">غیبت / غیرفعال</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                            <button type="button" onclick="switchTab('dashboard')" class="px-5 py-2 border border-gray-300 text-gray-700 rounded-xl text-xs font-medium hover:bg-slate-50 transition">لغو</button>
+                            <button type="submit" id="btn-submit-form" class="px-6 py-2 bg-teal-brand hover-bg-teal text-white rounded-xl text-xs font-bold shadow-md transition">ثبت</button>
+                        </div>
+                    </form>
+                </div>
+            </section>

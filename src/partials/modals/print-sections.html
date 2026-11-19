@@ -1,0 +1,43 @@
+    <!-- Patient File Print: Section Selection Modal -->
+    <div id="print-sections-modal" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-[55] animate-fade-in no-print">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+            <div class="bg-slate-700 p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-print text-lg"></i>
+                    <h3 class="text-sm font-bold">انتخاب بخش‌های موردنظر برای چاپ</h3>
+                </div>
+                <button onclick="closePrintSectionsModal()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 text-xs">
+                <p class="text-slate-500 mb-3">بخش‌هایی که می‌خواهید در خروجی چاپ پرونده درج شوند را انتخاب کنید:</p>
+                <div class="space-y-2 font-bold text-slate-700">
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-base" checked class="rounded text-teal-brand w-4 h-4"> <span>اطلاعات پایه</span>
+                    </label>
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-visits" class="rounded text-teal-brand w-4 h-4"> <span>سوابق ویزیت و درمان</span>
+                    </label>
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-dispense" class="rounded text-teal-brand w-4 h-4"> <span>تاریخچه دارو</span>
+                    </label>
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-calls" class="rounded text-teal-brand w-4 h-4"> <span>تاریخچه تماس‌ها</span>
+                    </label>
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-history" class="rounded text-teal-brand w-4 h-4"> <span>تغییرات پرونده</span>
+                    </label>
+                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer bg-slate-50 px-3 py-2 rounded-xl border hover:bg-slate-100">
+                        <input type="checkbox" id="print-sec-reviews" class="rounded text-teal-brand w-4 h-4"> <span>بررسی پرونده</span>
+                    </label>
+                </div>
+            </div>
+            <div class="p-5 border-t bg-slate-50 flex justify-end gap-2">
+                <button type="button" onclick="closePrintSectionsModal()" class="px-4 py-2 border rounded-xl hover:bg-white text-xs font-bold transition">انصراف</button>
+                <button type="button" onclick="confirmPatientPrintSections()" class="px-5 py-2 bg-teal-brand hover-bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> تأیید و چاپ
+                </button>
+            </div>
+        </div>
+    </div>
